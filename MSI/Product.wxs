@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  PasswordFilter.msi: Installer for the corresponding Password Filter DLL
+  Copyright (C) 2018  Inperpetuammemoriam
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<?if $(var.Platform) = x86 ?>
+  <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+  <?define PlatformSystemFolder = "SystemFolder" ?>
+<?elseif $(var.Platform) = x64 ?>
+  <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+  <?define PlatformSystemFolder = "System64Folder" ?>
+<?endif ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="$(var.SolutionName)" Language="1033" Version="1.0.0.0" Manufacturer="PS0" UpgradeCode="4fa317f0-99ba-4468-9c24-ecaad4d522f8">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="ICON" SourceFile="Resource Files\Font Awesome\$(var.SolutionName).ico"/>
+    <Property Id="ARPPRODUCTICON" Value="ICON" />
+
+    <Feature Id="ProductFeature" Title="$(var.SolutionName)MSI" Level="1">
+      <ComponentGroupRef Id="CORE" />
+      <ComponentRef Id="CLI" />
+      <ComponentGroupRef Id="LICENSES" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="CommonAppDataFolder">
+        <Directory Id="CommonAppDataFolder_PS0" Name="PS0">
+          <Directory Id="DATAFOLDER" Name="$(var.SolutionName)">
+            <Directory Id="Regex" Name="Regex" />
+            <Directory Id="SHA1" Name="SHA1" />
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="$(var.PlatformSystemFolder)" />
+      <Directory Id="$(var.PlatformProgramFilesFolder)">
+        <Directory Id="ProgramFilesFolder_PS0" Name="PS0">
+          <Directory Id="INSTALLFOLDER" Name="$(var.SolutionName)">
+            <Directory Id="FontAwesome" Name="Font Awesome" />
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="CORE">
+      <Component Id="DLL" Guid="915C7A7B-EDEF-4AFA-9BB2-2C383832E24D" Directory="$(var.PlatformSystemFolder)">
+        <?if $(var.Platform) = x86 ?>
+          <?if $(var.Configuration) = Debug ?>
+            <File Id="$(var.SolutionName)DLL" Name="$(var.SolutionName).dll" Source="..\Debug\$(var.SolutionName).dll" />
+          <?elseif $(var.Configuration) = Release ?>
+            <File Id="$(var.SolutionName)DLL" Name="$(var.SolutionName).dll" Source="..\Release\$(var.SolutionName).dll" />
+          <?endif ?>
+        <?elseif $(var.Platform) = x64 ?>
+          <?if $(var.Configuration) = Debug ?>
+            <File Id="$(var.SolutionName)DLL" Name="$(var.SolutionName).dll" Source="..\x64\Debug\$(var.SolutionName).dll" />
+          <?elseif $(var.Configuration) = Release ?>
+            <File Id="$(var.SolutionName)DLL" Name="$(var.SolutionName).dll" Source="..\x64\Release\$(var.SolutionName).dll" />
+          <?endif ?>
+        <?endif ?>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Control\Lsa" Root="HKLM">
+          <RegistryValue Name="Notification Packages" Value="$(var.SolutionName)" Type="multiString" Action="append" />
+        </RegistryKey>
+      </Component>
+      <Component Id="MSG" Guid="95A0EDA4-4346-43AE-B12A-A6874414223B" Directory="INSTALLFOLDER">
+        <?if $(var.Platform) = x86 ?>
+          <?if $(var.Configuration) = Debug ?>
+            <File Id="$(var.SolutionName)MSG" Name="Message.dll" Source="..\Debug\Message.dll" />
+          <?elseif $(var.Configuration) = Release ?>
+            <File Id="$(var.SolutionName)MSG" Name="Message.dll" Source="..\Release\Message.dll" />
+          <?endif ?>
+        <?elseif $(var.Platform) = x64 ?>
+          <?if $(var.Configuration) = Debug ?>
+            <File Id="$(var.SolutionName)MSG" Name="Message.dll" Source="..\x64\Debug\Message.dll" />
+          <?elseif $(var.Configuration) = Release ?>
+            <File Id="$(var.SolutionName)MSG" Name="Message.dll" Source="..\x64\Release\Message.dll" />
+          <?endif ?>
+        <?endif ?>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)AccountName" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Charset" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Bingo" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Dictionary" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Diversity" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)FullName" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Regex" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Repetition" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)SHA1" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+      </Component>
+      <Component Id="AccountName" Guid="BA90BCBB-F103-4FC7-ACAC-BB379D4030DB" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\AccountName" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Case sensitivity" Value="0" Type="integer" />
+          <RegistryValue Name="Component separators" Value=",.-_ 	" Type="string" />
+          <RegistryValue Name="Minimum component length" Value="3" Type="integer" />
+        </RegistryKey>
+      </Component>
+      <Component Id="Bingo" Guid="C6E86EDB-D142-4323-A57C-8099E2C8D758" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Bingo" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Maximum consecutive character count" Value="2" Type="integer" />
+        </RegistryKey>
+      </Component>
+      <Component Id="Charset" Guid="962E99E5-A1A2-4655-AF7E-151325788581" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Charset" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Digits" Value="1" Type="integer" />
+          <RegistryValue Name="Lowercase letters" Value="1" Type="integer" />
+          <RegistryValue Name="Non-alphanumeric character" Value="1" Type="integer" />
+          <RegistryValue Name="Uppercase letters" Value="1" Type="integer" />
+        </RegistryKey>
+      </Component>
+      <Component Id="Dictionary" Guid="4608F52F-1A29-4553-A3AB-8916343AD588" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Dictionary" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Case sensitivity" Value="0" Type="integer" />
+          <RegistryValue Name="Data" Value="" Type="multiString" Action="append" />
+        </RegistryKey>
+      </Component>
+      <Component Id="Diversity" Guid="BAA45D1B-201D-4EC2-BE4F-A3FE0E0C88BD" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Diversity" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Maximum number of identical characters" Value="5" Type="integer" />
+          <RegistryValue Name="Minimum number of different characters" Value="10" Type="integer" />
+        </RegistryKey>
+      </Component>
+      <Component Id="FullName" Guid="483E8EF6-122A-4608-8467-FA4855C02CC9" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\FullName" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Case sensitivity" Value="0" Type="integer" />
+          <RegistryValue Name="Component separators" Value=",.-_ 	" Type="string" />
+          <RegistryValue Name="Minimum component length" Value="3" Type="integer" />
+        </RegistryKey>
+      </Component>
+      <Component Id="Regex" Guid="AF53E750-88D2-46A8-A344-7794D6951469" Directory="Regex">
+        <File Id="PasswordRegex" Name="password.txt" Source="Resource Files\password.txt" />
+        <File Id="DateRegex" Name="date.txt" Source="Resource Files\date.txt" />
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Regex" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Insurmountable data" Value="password.txt" Type="multiString" Action="append" />
+          <RegistryValue Name="Surmountable data" Value="date.txt" Type="multiString" Action="append" />
+        </RegistryKey>
+      </Component>
+      <Component Id="Repetition" Guid="06ED2E27-5D0A-4CB7-B5EA-8994B6A9EB1D" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Repetition" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Case sensitivity" Value="0" Type="integer" />
+          <RegistryValue Name="Minimum sequence length" Value="3" Type="integer" />
+        </RegistryKey>
+      </Component>
+      <Component Id="SHA1" Guid="699ECB46-A546-4192-95DC-1B178CC5FD73" Directory="SHA1">
+        <File Id="PwnedPasswordsOrderedByHashV3PrevalenceAtLeast1000HashOnly" Name="pwned-passwords-ordered-by-hash-v3-prevalence-at-least-1000-hash-only.txt" Source="Resource Files\pwned-passwords-ordered-by-hash-v3-prevalence-at-least-1000-hash-only.txt" />
+        <File Id="PwnedPasswordsOrderedByHashV3PrevalenceAtLeast100HashOnly" Name="pwned-passwords-ordered-by-hash-v3-prevalence-at-least-100-hash-only.txt" Source="Resource Files\pwned-passwords-ordered-by-hash-v3-prevalence-at-least-100-hash-only.txt" />
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\SHA1" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Insurmountable data" Value="pwned-passwords-ordered-by-hash-v3-prevalence-at-least-1000-hash-only.txt" Type="multiString" Action="append" />
+          <RegistryValue Name="Surmountable data" Value="pwned-passwords-ordered-by-hash-v3-prevalence-at-least-100-hash-only.txt" Type="multiString" Action="append" />
+        </RegistryKey>
+      </Component>
+      <Component Id="Straight" Guid="A87F3107-D08A-4463-BCA2-6E6E6273DE33" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Straight" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Minimum sequence length" Value="5" Type="integer" />
+        </RegistryKey>
+      </Component>
+    </ComponentGroup>
+    <Component Id="CLI" Guid="1A2F0884-2B23-4F05-9A44-7FF911D9D6C7" Directory="INSTALLFOLDER">
+      <?if $(var.Platform) = x86 ?>
+        <?if $(var.Configuration) = Debug ?>
+          <File Id="$(var.SolutionName)CLI" Name="$(var.SolutionName).exe" Source="..\Debug\$(var.SolutionName).exe" />
+        <?elseif $(var.Configuration) = Release ?>
+          <File Id="$(var.SolutionName)CLI" Name="$(var.SolutionName).exe" Source="..\Release\$(var.SolutionName).exe" />
+        <?endif ?>
+      <?elseif $(var.Platform) = x64 ?>
+        <?if $(var.Configuration) = Debug ?>
+          <File Id="$(var.SolutionName)CLI" Name="$(var.SolutionName).exe" Source="..\x64\Debug\$(var.SolutionName).exe" />
+        <?elseif $(var.Configuration) = Release ?>
+          <File Id="$(var.SolutionName)CLI" Name="$(var.SolutionName).exe" Source="..\x64\Release\$(var.SolutionName).exe" />
+        <?endif ?>
+      <?endif ?>
+    </Component>
+    <ComponentGroup Id="LICENSES">
+      <Component Id="FA_LICENSE" Guid="CEB62F2F-7E81-4067-8994-DCE1A064CBD9" Directory="FontAwesome">
+        <File Id="FA_LICENSE" Name="LICENSE.txt" Source="Resource Files\Font Awesome\LICENSE.txt" />
+      </Component>
+      <Component Id="LICENSE" Guid="B7583222-3F1E-45F1-B2A5-B0BF4AD59EB2" Directory="INSTALLFOLDER">
+        <File Id="LICENSE" Name="LICENSE.txt" Source="Resource Files\LICENSE.txt" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
