@@ -227,6 +227,8 @@ BOOLEAN PasswordFilterAccountName(PUNICODE_STRING AccountName, PUNICODE_STRING F
 	wstring fullname(FullName->Buffer, FullName->Length / 2);
 	wstring password(Password->Buffer, Password->Length / 2);
 
+	wstring aBuffer(AccountName->Buffer, AccountName->Length / 2);
+
 	BOOLEAN status = FALSE;
 
 	LSTATUS sec;
@@ -279,11 +281,11 @@ BOOLEAN PasswordFilterAccountName(PUNICODE_STRING AccountName, PUNICODE_STRING F
 	}
 
 	if (!cSensitivity) {
-		(void)transform(accountname.begin(), accountname.end(), accountname.begin(), ::tolower);
+		(void)transform(aBuffer.begin(), aBuffer.end(), aBuffer.begin(), ::tolower);
 		(void)transform(password.begin(), password.end(), password.begin(), ::tolower);
 	}
 
-	p = wcstok_s((wchar_t *)accountname.c_str(), cSeparators, &context);
+	p = wcstok_s((wchar_t *)aBuffer.c_str(), cSeparators, &context);
 	while (p != NULL) {
 		component.assign(p);
 		if (component.length() >= minLength && !(status = (password.find(component) == wstring::npos))) {
@@ -480,8 +482,9 @@ Cleanup:
 BOOLEAN PasswordFilterDictionary(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation) {
 	wstring accountname(AccountName->Buffer, AccountName->Length / 2);
 	wstring fullname(FullName->Buffer, FullName->Length / 2);
-	wstring wBuffer(Password->Buffer, Password->Length / 2);
-	string password(wBuffer.begin(), wBuffer.end());
+	wstring password(Password->Buffer, Password->Length / 2);
+
+	string pBuffer(password.begin(), password.end());
 
 	BOOLEAN status = FALSE;
 
@@ -527,10 +530,8 @@ BOOLEAN PasswordFilterDictionary(PUNICODE_STRING AccountName, PUNICODE_STRING Fu
 		goto Cleanup;
 	}
 
-	if (!cSensitivity) {
-		(void)transform(fullname.begin(), fullname.end(), fullname.begin(), ::tolower);
-		(void)transform(password.begin(), password.end(), password.begin(), ::tolower);
-	}
+	if (!cSensitivity)
+		(void)transform(pBuffer.begin(), pBuffer.end(), pBuffer.begin(), ::tolower);
 
 	p = data;
 	while (*p != L'\0') {
@@ -544,7 +545,7 @@ BOOLEAN PasswordFilterDictionary(PUNICODE_STRING AccountName, PUNICODE_STRING Fu
 			goto Cleanup;
 		}
 		(void)getline(ifs, entry);
-		if (password.find(entry)) {
+		if (pBuffer.find(entry)) {
 			lpStrings[0] = accountname.c_str();
 			lpStrings[1] = fullname.c_str();
 			lpStrings[1] = filename.c_str();
@@ -566,6 +567,8 @@ Cleanup:
 			(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, MEMORY_ERRORS, MEMORY_HEAPFREE_ERROR, NULL, 1, 0, lpStrings, NULL);
 		}
 	}
+
+	(void)SecureZeroMemory(&pBuffer, pBuffer.capacity());
 
 	(void)SecureZeroMemory(&password, password.capacity());
 
@@ -636,6 +639,7 @@ BOOLEAN PasswordFilterDiversity(PUNICODE_STRING AccountName, PUNICODE_STRING Ful
 
 Cleanup:
 	(void)SecureZeroMemory(&charset, charset.capacity());
+
 	(void)SecureZeroMemory(&password, password.capacity());
 
 	if (!DeregisterEventSource(hEventLog))
@@ -648,6 +652,8 @@ BOOLEAN PasswordFilterFullName(PUNICODE_STRING AccountName, PUNICODE_STRING Full
 	wstring accountname(AccountName->Buffer, AccountName->Length / 2);
 	wstring fullname(FullName->Buffer, FullName->Length / 2);
 	wstring password(Password->Buffer, Password->Length / 2);
+
+	wstring fBuffer(FullName->Buffer, FullName->Length / 2);
 
 	BOOLEAN status = FALSE;
 
@@ -701,11 +707,11 @@ BOOLEAN PasswordFilterFullName(PUNICODE_STRING AccountName, PUNICODE_STRING Full
 	}
 
 	if (!cSensitivity) {
-		(void)transform(fullname.begin(), fullname.end(), fullname.begin(), ::tolower);
+		(void)transform(fBuffer.begin(), fBuffer.end(), fBuffer.begin(), ::tolower);
 		(void)transform(password.begin(), password.end(), password.begin(), ::tolower);
 	}
 
-	p = wcstok_s((wchar_t *)fullname.c_str(), cSeparators, &context);
+	p = wcstok_s((wchar_t *)fBuffer.c_str(), cSeparators, &context);
 	while (p != NULL) {
 		component.assign(p);
 		if (component.length() >= minLength && !(status = (password.find(component) == wstring::npos))) {
@@ -741,8 +747,9 @@ Cleanup:
 BOOLEAN PasswordFilterRegex(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation) {
 	wstring accountname(AccountName->Buffer, AccountName->Length / 2);
 	wstring fullname(FullName->Buffer, FullName->Length / 2);
-	wstring wBuffer(Password->Buffer, Password->Length / 2);
-	string password(wBuffer.begin(), wBuffer.end());
+	wstring password(Password->Buffer, Password->Length / 2);
+
+	string pBuffer(password.begin(), password.end());
 
 	BOOLEAN status = FALSE;
 
@@ -814,7 +821,7 @@ BOOLEAN PasswordFilterRegex(PUNICODE_STRING AccountName, PUNICODE_STRING FullNam
 				goto Cleanup;
 			}
 			(void)getline(ifs, rgx);
-			if (regex_search(password, regex(rgx))) {
+			if (regex_search(pBuffer, regex(rgx))) {
 				if (data == sData && SetOperation) {
 					lpStrings[0] = accountname.c_str();
 					lpStrings[1] = fullname.c_str();
@@ -858,8 +865,9 @@ Cleanup:
 		}
 	}
 
+	(void)SecureZeroMemory(&pBuffer, pBuffer.capacity());
+
 	(void)SecureZeroMemory(&password, password.capacity());
-	(void)SecureZeroMemory(&wBuffer, wBuffer.capacity());
 
 	if (!DeregisterEventSource(hEventLog))
 		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, EVENT_ERRORS, EVENT_DEREGISTEREVENTSOURCE_ERROR, NULL, 0, 0, NULL, NULL);
@@ -929,8 +937,9 @@ Cleanup:
 BOOLEAN PasswordFilterSHA1(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation) {
 	wstring accountname(AccountName->Buffer, AccountName->Length / 2);
 	wstring fullname(FullName->Buffer, FullName->Length / 2);
-	wstring wBuffer(Password->Buffer, Password->Length / 2);
-	string buffer(wBuffer.begin(), wBuffer.end());
+	wstring password(Password->Buffer, Password->Length / 2);
+
+	string pBuffer(password.begin(), password.end());
 
 	BOOLEAN status = FALSE;
 
@@ -1043,7 +1052,7 @@ BOOLEAN PasswordFilterSHA1(PUNICODE_STRING AccountName, PUNICODE_STRING FullName
 		goto Cleanup;
 	}
 
-	switch (BCryptHashData(hHash, (PBYTE)buffer.c_str(), (ULONG)buffer.length(), 0)) {
+	switch (BCryptHashData(hHash, (PBYTE)pBuffer.c_str(), (ULONG)pBuffer.length(), 0)) {
 	case STATUS_SUCCESS:
 		break;
 	case STATUS_INVALID_PARAMETER:
@@ -1217,8 +1226,9 @@ Cleanup:
 		}
 	}
 
-	(void)SecureZeroMemory(&buffer, buffer.capacity());
-	(void)SecureZeroMemory(&wBuffer, wBuffer.capacity());
+	(void)SecureZeroMemory(&pBuffer, pBuffer.capacity());
+
+	(void)SecureZeroMemory(&password, password.capacity());
 
 	if (!DeregisterEventSource(hEventLog))
 		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, EVENT_ERRORS, EVENT_DEREGISTEREVENTSOURCE_ERROR, NULL, 0, 0, NULL, NULL);
