@@ -138,6 +138,10 @@
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Straight" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
       </Component>
       <Component Id="AccountName" Guid="BA90BCBB-F103-4FC7-ACAC-BB379D4030DB" Directory="DATAFOLDER">
         <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\AccountName" Root="HKLM">

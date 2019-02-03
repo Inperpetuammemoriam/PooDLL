@@ -110,7 +110,7 @@ extern "C" __declspec(dllexport) BOOLEAN PasswordFilter(PUNICODE_STRING AccountN
 	HANDLE hEventLog;
 	LPCWSTR lpStrings[3];
 
-	DWORD pcbData, sAccountName, sBingo, sCharset, sDictionary, sDiversity, sFullName, sRegex, sRepetition, sSHA1;
+	DWORD pcbData, sAccountName, sBingo, sCharset, sDictionary, sDiversity, sFullName, sRegex, sRepetition, sSHA1, sStraight;
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER);
 
@@ -211,6 +211,17 @@ extern "C" __declspec(dllexport) BOOLEAN PasswordFilter(PUNICODE_STRING AccountN
 	}
 
 	if (sSHA1 && !PasswordFilterSHA1(AccountName, FullName, Password, SetOperation))
+		goto Cleanup;
+
+	pcbData = sizeof(DWORD);
+	if ((sec = RegGetValueW(HKEY_LOCAL_MACHINE, STRAIGHT_REG_FOLDER, L"Armed", RRF_RT_DWORD, NULL, &sStraight, &pcbData)) != ERROR_SUCCESS) {
+		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" STRAIGHT_REG_FOLDER L"\\Armed";
+		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, sec, 0, (LPWSTR)&lpStrings[1], 0, NULL);
+		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_VALUE_ERROR, NULL, 2, 0, lpStrings, NULL);
+		goto Cleanup;
+	}
+
+	if (sStraight && !PasswordFilterStraight(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
 	status = TRUE;
