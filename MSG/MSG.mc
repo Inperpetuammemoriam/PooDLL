@@ -129,10 +129,7 @@ Could not open file "%1".
 MessageId=
 SymbolicName=INITIALIZECHANGENOTIFY
 Language=English
-PasswordFilter.dll  Copyright (C) 2018-2019  Inperpetuammemoriam\r\n
-This program comes with ABSOLUTELY NO WARRANTY.\r\n
-This is free software, and you are welcome to redistribute it\r\n
-under certain conditions.
+PasswordFilter.dll  Copyright (C) 2018-2019  Inperpetuammemoriam%nThis program comes with ABSOLUTELY NO WARRANTY.%nThis is free software, and you are welcome to redistribute it%nunder certain conditions.
 .
 
 MessageId=
