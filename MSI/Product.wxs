@@ -27,7 +27,7 @@
 <?endif ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="$(var.SolutionName)" Language="1033" Version="0.1.1" Manufacturer="PS0" UpgradeCode="4fa317f0-99ba-4468-9c24-ecaad4d522f8">
+  <Product Id="*" Name="$(var.SolutionName)" Language="1033" Version="0.1.2" Manufacturer="PS0" UpgradeCode="4fa317f0-99ba-4468-9c24-ecaad4d522f8">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
