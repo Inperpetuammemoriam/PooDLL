@@ -23,9 +23,9 @@ MessageIdTypedef=DWORD
 ;// Categories
 
 MessageId=
-SymbolicName=CRYPTO_ERRORS
+SymbolicName=BCRYPT_ERRORS
 Language=English
-Crypto Errors
+BCrypt Errors
 .
 
 MessageId=
@@ -55,63 +55,63 @@ Registry Errors
 ;// Messages
 
 MessageId=
-SymbolicName=CRYPTO_BUFFERTOOSMALL_HASH_ERROR
+SymbolicName=BCRYPT_BUFFERTOOSMALL_HASH_ERROR
 Language=English
-The size of the hash object specified by the %1 parameter is not large enough to hold the hash object.
+The size of the hash object is not large enough to hold the hash object.
 .
 
 MessageId=
-SymbolicName=CRYPTO_BUFFERTOOSMALL_PROPERTY_ERROR
+SymbolicName=BCRYPT_BUFFERTOOSMALL_PROPERTY_ERROR
 Language=English
-The buffer size specified by the %1 parameter is not large enough to hold the property value.
+The buffer size is not large enough to hold the property value.
 .
 
 MessageId=
-SymbolicName=CRYPTO_INVALIDHANDLE_ERROR
+SymbolicName=BCRYPT_INVALIDHANDLE_ERROR
 Language=English
-The handle in the %1 parameter is not valid.
+The handle is not valid.
 .
 
 MessageId=
-SymbolicName=CRYPTO_INVALIDHANDLE_ALGORITHM_ERROR
+SymbolicName=BCRYPT_INVALIDHANDLE_ALGORITHM_ERROR
 Language=English
-The algorithm handle in the %1 parameter is not valid.
+The algorithm handle is not valid.
 .
 
 MessageId=
-SymbolicName=CRYPTO_INVALIDHANDLE_HASH_ERROR
+SymbolicName=BCRYPT_INVALIDHANDLE_HASH_ERROR
 Language=English
-The hash handle in the %1 parameter is not valid.
+The hash handle is not valid.
 .
 
 MessageId=
-SymbolicName=CRYPTO_INVALIDPARAMETER_ERROR
+SymbolicName=BCRYPT_INVALIDPARAMETER_ERROR
 Language=English
 One or more parameters are not valid.
 .
 
 MessageId=
-SymbolicName=CRYPTO_NOMEMORY_ERROR
+SymbolicName=BCRYPT_NOMEMORY_ERROR
 Language=English
 A memory allocation failure occurred.
 .
 
 MessageId=
-SymbolicName=CRYPTO_NOTFOUND_ERROR
+SymbolicName=BCRYPT_NOTFOUND_ERROR
 Language=English
 No provider was found for the specified algorithm ID.
 .
 
 MessageId=
-SymbolicName=CRYPTO_NOTSUPPORTED_ALGORITHM_ERROR
+SymbolicName=BCRYPT_NOTSUPPORTED_ALGORITHM_ERROR
 Language=English
-The algorithm provider specified by the %1 parameter does not support the hash interface.
+The algorithm provider does not support the hash interface.
 .
 
 MessageId=
-SymbolicName=CRYPTO_NOTSUPPORTED_PROPERTY_ERROR
+SymbolicName=BCRYPT_NOTSUPPORTED_PROPERTY_ERROR
 Language=English
-The named property specified by the %1 parameter is not supported.
+The named property is not supported.
 .
 
 MessageId=
@@ -133,15 +133,21 @@ PasswordFilter.dll  Copyright (C) 2018-2019  Inperpetuammemoriam%nThis program c
 .
 
 MessageId=
-SymbolicName=MEMORY_HEAPALLOC_ERROR
+SymbolicName=MEMORY_HEAPALLOC_NO_MEMORY_ERROR
 Language=English
-Memory allocation for %1 failed.
+The allocation attempt failed because of a lack of available memory or heap corruption.
+.
+
+MessageId=
+SymbolicName=MEMORY_HEAPALLOC_ACCESS_VIOLATION_ERROR
+Language=English
+The allocation attempt failed because of heap corruption or improper function parameters.
 .
 
 MessageId=
 SymbolicName=MEMORY_HEAPFREE_ERROR
 Language=English
-Could not free %1.
+Could not free memory.%n%nSystem Error Message: %1
 .
 
 MessageId=
@@ -165,61 +171,61 @@ A component of AccountName was found in the new password of %1 (%2). The new pas
 MessageId=
 SymbolicName=PASSWORDFILTER_CHARSET_SUCCESS
 Language=English
-The new password for %1 (%2) contains the configured number of elements from the given sets. The new password was therefore accepted.
+The new password for %1 (%2) contains the configured number of elements from the given sets and was therefore accepted.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_CHARSET_DIGITS_WARNING
 Language=English
-The new password for %1 (%2) does not contain enough digits. The new password was therefore rejected.
+The new password for %1 (%2) does not contain enough digits and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_CHARSET_LOWERCASE_WARNING
 Language=English
-The new password for %1 (%2) does not contain enough lowercase characters. The new password was therefore rejected.
+The new password for %1 (%2) does not contain enough lowercase characters and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_CHARSET_NONALPHANUMERIC_WARNING
 Language=English
-The new password for %1 (%2) does not contain enough non-alphanumeric characters. The new password was therefore rejected.
+The new password for %1 (%2) does not contain enough non-alphanumeric characters and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_CHARSET_UPPERCASE_WARNING
 Language=English
-The new password for %1 (%2) does not contain enough uppercase characters. The new password was therefore rejected.
+The new password for %1 (%2) does not contain enough uppercase characters and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_DICTIONARY_SUCCESS
 Language=English
-The new password for %1 (%2) contains no entries of the specified dictionaries. The new password was therefore accepted.
+The new password for %1 (%2) contains no entries of the specified dictionaries and was therefore accepted.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_DICTIONARY_WARNING
 Language=English
-The new password for %1 (%2) contains an entry of the dictionary in "%3". The new password was therefore rejected.
+The new password for %1 (%2) contains an entry of the dictionary in "%3" and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_DIVERSITY_SUCCESS
 Language=English
-The new password for %1 (%2) meets the diversity criteria. The new password was therefore accepted.
+The new password for %1 (%2) meets the diversity criteria and was therefore accepted.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_DIVERSITY_MAXIDENTICAL_WARNING
 Language=English
-The new password for %1 (%2) contains too many identical characters. The new password was therefore rejected.
+The new password for %1 (%2) contains too many identical characters and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_DIVERSITY_MINDIFFERENT_WARNING
 Language=English
-The new password for %1 (%2) does not contain enough differenct characters. The new password was therefore rejected.
+The new password for %1 (%2) does not contain enough differenct characters and was therefore rejected.
 .
 
 MessageId=
@@ -237,77 +243,77 @@ A component of FullName was found in the new password of %1 (%2). The new passwo
 MessageId=
 SymbolicName=PASSWORDFILTER_REGEX_SETOPERATION_WARNING
 Language=English
-New password for %1 (%2) matched a regular expression in file "%3" but was accepted.
+The new password for %1 (%2) matched a regular expression in file "%3" but was nonetheless accepted.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_REGEX_SUCCESS
 Language=English
-New password for %1 (%2) matched no regular expression and was therefore accepted.
+The new password for %1 (%2) matched no regular expression and was therefore accepted.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_REGEX_WARNING
 Language=English
-New password for %1 (%2) matched a regular expression in file "%3" and was therefore rejected.
+The new password for %1 (%2) matched a regular expression in file "%3" and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_REPETITION_SUCCESS
 Language=English
-New password for %1 (%2) contains no repeating character sequences and was therefore accepted.
+The new password for %1 (%2) contains no repeating character sequences and was therefore accepted.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_REPETITION_CHARACTER_WARNING
 Language=English
-New password for %1 (%2) contains sequences of identical characters longer than the specified threshold. The new password was therefore rejected.
+The new password for %1 (%2) contains sequences of identical characters longer than the specified threshold and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_REPETITION_STRING_WARNING
 Language=English
-New password for %1 (%2) contains repeating character sequences and was therefore rejected.
+The new password for %1 (%2) contains repeating character sequences and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_SHA1_SETOPERATION_WARNING
 Language=English
-New password for %1 (%2) was found in file "%3" but accepted.
+The new password for %1 (%2) was found in file "%3" but was nonetheless accepted.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_SHA1_SUCCESS
 Language=English
-New password for %1 (%2) was not found in SHA1 data and therefore accepted.
+The new password for %1 (%2) was not found in SHA1 data and was therefore accepted.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_SHA1_WARNING
 Language=English
-New password for %1 (%2) was found in file "%3" and rejected.
+The new password for %1 (%2) was found in file "%3" and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_STRAIGHT_SUCCESS
 Language=English
-The new password for %1 (%2) contains no invalid character sequences. The new password was therefore accepted.
+The new password for %1 (%2) contains no invalid character sequences and was therefore accepted.
 .
 
 MessageId=
 SymbolicName=PASSWORDFILTER_STRAIGHT_WARNING
 Language=English
-The new password for %1 (%2) contains an invalid character sequence. The new password was therefore rejected.
+The new password for %1 (%2) contains an invalid character sequence and was therefore rejected.
 .
 
 MessageId=
 SymbolicName=REGISTRY_REGGETVALUE_SIZE_ERROR
 Language=English
-Could not get the registry key "%1" value's size. (%2)
+Could not get the registry key "%1\%2\%3" value's size.%n%nSystem Error Message: %4
 .
 
 MessageId=
 SymbolicName=REGISTRY_REGGETVALUE_VALUE_ERROR
 Language=English
-Could not get the registry value for "%1". (%2)
+Could not get the registry value for "%1\%2\%3".%n%nSystem Error Message: %4
 .
