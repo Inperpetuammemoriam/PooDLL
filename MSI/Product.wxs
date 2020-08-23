@@ -110,10 +110,6 @@
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Bingo" Root="HKLM">
-          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
-          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
-        </RegistryKey>
         <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Dictionary" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
@@ -149,12 +145,6 @@
           <RegistryValue Name="Case sensitivity" Value="0" Type="integer" />
           <RegistryValue Name="Component separators" Value=",.-_ 	" Type="string" />
           <RegistryValue Name="Minimum component length" Value="3" Type="integer" />
-        </RegistryKey>
-      </Component>
-      <Component Id="Bingo" Guid="C6E86EDB-D142-4323-A57C-8099E2C8D758" Directory="DATAFOLDER">
-        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Bingo" Root="HKLM">
-          <RegistryValue Name="Armed" Value="1" Type="integer" />
-          <RegistryValue Name="Maximum consecutive character count" Value="2" Type="integer" />
         </RegistryKey>
       </Component>
       <Component Id="Charset" Guid="962E99E5-A1A2-4655-AF7E-151325788581" Directory="DATAFOLDER">
@@ -200,8 +190,9 @@
       <Component Id="Repetition" Guid="06ED2E27-5D0A-4CB7-B5EA-8994B6A9EB1D" Directory="DATAFOLDER">
         <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Repetition" Root="HKLM">
           <RegistryValue Name="Armed" Value="1" Type="integer" />
-          <RegistryValue Name="Case sensitivity" Value="0" Type="integer" />
-          <RegistryValue Name="Minimum sequence length" Value="3" Type="integer" />
+          <RegistryValue Name="Character sequence case sensitivity" Value="0" Type="integer" />
+          <RegistryValue Name="Maximum identical consecutive characters" Value="2" Type="integer" />
+          <RegistryValue Name="Minimum character sequence length" Value="3" Type="integer" />
         </RegistryKey>
       </Component>
       <Component Id="SHA1" Guid="699ECB46-A546-4192-95DC-1B178CC5FD73" Directory="SHA1">

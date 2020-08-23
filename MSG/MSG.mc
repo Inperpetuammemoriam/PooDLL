@@ -163,18 +163,6 @@ A component of AccountName was found in the new password of %1 (%2). The new pas
 .
 
 MessageId=
-SymbolicName=PASSWORDFILTER_BINGO_SUCCESS
-Language=English
-The new password for %1 (%2) contains no sequences of consecutive characters longer than the specified threshold. The new password was therefore accepted.
-.
-
-MessageId=
-SymbolicName=PASSWORDFILTER_BINGO_WARNING
-Language=English
-The new password for %1 (%2) contains sequences of consecutive characters longer than the specified threshold. The new password was therefore rejected.
-.
-
-MessageId=
 SymbolicName=PASSWORDFILTER_CHARSET_SUCCESS
 Language=English
 The new password for %1 (%2) contains the configured number of elements from the given sets. The new password was therefore accepted.
@@ -271,7 +259,13 @@ New password for %1 (%2) contains no repeating character sequences and was there
 .
 
 MessageId=
-SymbolicName=PASSWORDFILTER_REPETITION_WARNING
+SymbolicName=PASSWORDFILTER_REPETITION_CHARACTER_WARNING
+Language=English
+New password for %1 (%2) contains sequences of identical characters longer than the specified threshold. The new password was therefore rejected.
+.
+
+MessageId=
+SymbolicName=PASSWORDFILTER_REPETITION_STRING_WARNING
 Language=English
 New password for %1 (%2) contains repeating character sequences and was therefore rejected.
 .
