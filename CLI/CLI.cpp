@@ -60,17 +60,16 @@ int wmain(int argc, wchar_t *argv[], wchar_t *envp[]) {
 		FullName.MaximumLength = 0;
 		FullName.Length = 0;
 		FullName.Buffer = (PWSTR)L"";
+		InitializeChangeNotify = (InitializeChangeNotify_t)GetProcAddress(hModule, "InitializeChangeNotify");
+		if (InitializeChangeNotify == NULL) {
+			wcerr << L"Error: GetProcAddress failed with error code " << GetLastError() << L"." << endl;
+			goto Cleanup;
+		}
+		(void)InitializeChangeNotify();
 		for (int i = 1; i < argc; i++) {
 			Password.MaximumLength = (USHORT)(wcslen(argv[i]) * sizeof(wchar_t) + 1);
 			Password.Length = (USHORT)(wcslen(argv[i]) * sizeof(wchar_t));
 			Password.Buffer = argv[i];
-
-			InitializeChangeNotify = (InitializeChangeNotify_t)GetProcAddress(hModule, "InitializeChangeNotify");
-			if (InitializeChangeNotify == NULL) {
-				wcerr << L"Error: GetProcAddress failed with error code " << GetLastError() << L"." << endl;
-				goto Cleanup;
-			}
-			(void)InitializeChangeNotify();
 			PasswordFilter = (PasswordFilter_t)GetProcAddress(hModule, "PasswordFilter");
 			if (PasswordFilter == NULL) {
 				wcerr << L"Error: GetProcAddress failed with error code " << GetLastError() << L"." << endl;
