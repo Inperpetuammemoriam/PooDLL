@@ -231,12 +231,12 @@
         </RegistryKey>
       </Component>
       <Component Id="SHA1" Guid="699ECB46-A546-4192-95DC-1B178CC5FD73" Directory="SHA1">
-        <File Id="PwnedPasswordsSha1OrderedByHashV5PrevalenceAtLeast1000HashOnly" Name="pwned-passwords-sha1-ordered-by-hash-v5-prevalence-at-least-1000-hash-only.txt" Source="Resource Files\pwned-passwords-sha1-ordered-by-hash-v5-prevalence-at-least-1000-hash-only.txt" />
-        <File Id="PwnedPasswordsSha1OrderedByHashV5PrevalenceAtLeast100HashOnly" Name="pwned-passwords-sha1-ordered-by-hash-v5-prevalence-at-least-100-hash-only.txt" Source="Resource Files\pwned-passwords-sha1-ordered-by-hash-v5-prevalence-at-least-100-hash-only.txt" />
+        <File Id="PwnedPasswordsSha1OrderedByHashV6PrevalenceAtLeast1000HashOnly" Name="pwned-passwords-sha1-ordered-by-hash-v6-prevalence-at-least-1000-hash-only.txt" Source="Resource Files\pwned-passwords-sha1-ordered-by-hash-v6-prevalence-at-least-1000-hash-only.txt" />
+        <File Id="PwnedPasswordsSha1OrderedByHashV6PrevalenceAtLeast100HashOnly" Name="pwned-passwords-sha1-ordered-by-hash-v6-prevalence-at-least-100-hash-only.txt" Source="Resource Files\pwned-passwords-sha1-ordered-by-hash-v6-prevalence-at-least-100-hash-only.txt" />
         <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\SHA1" Root="HKLM">
           <RegistryValue Name="Armed" Value="1" Type="integer" />
-          <RegistryValue Name="Insurmountable data" Value="pwned-passwords-sha1-ordered-by-hash-v5-prevalence-at-least-1000-hash-only.txt" Type="multiString" Action="append" />
-          <RegistryValue Name="Surmountable data" Value="pwned-passwords-sha1-ordered-by-hash-v5-prevalence-at-least-100-hash-only.txt" Type="multiString" Action="append" />
+          <RegistryValue Name="Insurmountable data" Value="pwned-passwords-sha1-ordered-by-hash-v6-prevalence-at-least-1000-hash-only.txt" Type="multiString" Action="append" />
+          <RegistryValue Name="Surmountable data" Value="pwned-passwords-sha1-ordered-by-hash-v6-prevalence-at-least-100-hash-only.txt" Type="multiString" Action="append" />
         </RegistryKey>
       </Component>
       <Component Id="Straight" Guid="A87F3107-D08A-4463-BCA2-6E6E6273DE33" Directory="DATAFOLDER">
