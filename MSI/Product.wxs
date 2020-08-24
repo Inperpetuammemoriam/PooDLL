@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  PasswordFilter.msi: Installer for the corresponding Password Filter DLL
+  PooDLL.msi: Installer for the corresponding Password Filter DLL
   Copyright (C) 2018-2020  Inperpetuammemoriam
 
   This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
-    <Icon Id="ICON" SourceFile="Resource Files\Font Awesome\$(var.SolutionName).ico"/>
+    <Icon Id="ICON" SourceFile="Resource Files\$(var.SolutionName).ico"/>
     <Property Id="ARPPRODUCTICON" Value="ICON" />
 
     <Feature Id="ProductFeature" Title="$(var.SolutionName)MSI" Level="1">
@@ -115,47 +115,47 @@
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)AccountName" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterAccountName" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Charset" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterCharset" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Dictionary" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterDictionary" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Diversity" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterDiversity" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)FullName" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterFullName" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)HIBP" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterHIBP" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Length" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterLength" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Regex" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterRegex" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Repetition" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterRepetition" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)SHA1" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterSHA1" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
-        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Straight" Root="HKLM">
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\PasswordFilterStraight" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>

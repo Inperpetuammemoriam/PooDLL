@@ -1,5 +1,5 @@
 /*
- * PasswordFilter.exe: Command-line tool for testing Password Filter DLLs
+ * PooDLL.exe: Command-line tool for testing Password Filter DLLs
  * Copyright (C) 2018-2020  Inperpetuammemoriam
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #include <Windows.h>
 #include <SubAuth.h>
 
-#define LIBRARY_NAME L"PasswordFilter.dll"
+#define LIBRARY_NAME L"PooDLL.dll"
 #define SET_OPERATION FALSE
 
 using namespace std;
@@ -41,14 +41,14 @@ int wmain(int argc, wchar_t *argv[], wchar_t *envp[]) {
 	PasswordFilter_t PasswordFilter;
 	PasswordChangeNotify_t PasswordChangeNotify;
 
-	wcerr << L"PasswordFilter.exe  Copyright (C) 2018-2020  Inperpetuammemoriam" << endl;
+	wcerr << L"PooDLL.exe  Copyright (C) 2018-2020  Inperpetuammemoriam" << endl;
 	wcerr << L"This program comes with ABSOLUTELY NO WARRANTY." << endl;
 	wcerr << L"This is free software, and you are welcome to redistribute it" << endl;
 	wcerr << L"under certain conditions." << endl;
 	wcerr << endl;
 
 	if (argc == 1) {
-		wcerr << L"Usage: PasswordFilter.exe password [password [...]]" << endl;
+		wcerr << L"Usage: PooDLL.exe password [password [...]]" << endl;
 		return 0;
 	}
 

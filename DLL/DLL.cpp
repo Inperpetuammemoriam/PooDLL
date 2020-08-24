@@ -1,5 +1,5 @@
 /*
- * PasswordFilter.dll: DLL implementing the Password Filter functions
+ * PooDLL.dll: DLL implementing the Password Filter functions
  * Copyright (C) 2018-2020  Inperpetuammemoriam
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 
 #include "..\MSG\MSG.h"
 
-#define EVENTLOG_SOURCE_PASSWORDFILTER L"PasswordFilter"
+#define EVENTLOG_SOURCE_POODLL L"PooDLL"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_ACCOUNTNAME L"PasswordFilterAccountName"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_CHARSET L"PasswordFilterCharset"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_DICTIONARY L"PasswordFilterDictionary"
@@ -45,7 +45,7 @@
 #define EVENTLOG_SOURCE_PASSWORDFILTER_SHA1 L"PasswordFilterSHA1"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_STRAIGHT L"PasswordFilterStraight"
 #define MANUFACTURER L"PS0"
-#define SOLUTION L"PasswordFilter"
+#define SOLUTION L"PooDLL"
 
 #define DATA_FOLDER L"C:\\ProgramData\\" MANUFACTURER L"\\" SOLUTION
 #define DATA_FOLDER_REGEX DATA_FOLDER L"\\Regex"
@@ -78,8 +78,8 @@ string WinHTTPGet(LPCWSTR pswzServerName, INTERNET_PORT nServerPort, LPCWSTR pws
 BOOLEAN PasswordFilterAccountName(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterCharset(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterDictionary(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
-BOOLEAN PasswordFilterFullName(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterDiversity(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
+BOOLEAN PasswordFilterFullName(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterHIBP(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterLength(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterRegex(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
@@ -90,9 +90,9 @@ BOOLEAN PasswordFilterStraight(PUNICODE_STRING AccountName, PUNICODE_STRING Full
 extern "C" __declspec(dllexport) BOOLEAN InitializeChangeNotify(void) {
 	HANDLE hEventLog;
 
-	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER);
+	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_POODLL);
 
-	(void)ReportEventW(hEventLog, EVENTLOG_INFORMATION_TYPE, 0, INITIALIZECHANGENOTIFY, NULL, 0, 0, NULL, NULL);
+	(void)ReportEventW(hEventLog, EVENTLOG_INFORMATION_TYPE, 0, COPYRIGHT, NULL, 0, 0, NULL, NULL);
 
 	if (!DeregisterEventSource(hEventLog))
 		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, EVENT_ERRORS, EVENT_DEREGISTEREVENTSOURCE_ERROR, NULL, 0, 0, NULL, NULL);
@@ -106,7 +106,7 @@ extern "C" __declspec(dllexport) NTSTATUS PasswordChangeNotify(PUNICODE_STRING U
 	HANDLE hEventLog;
 	LPCWSTR lpStrings[1];
 
-	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER);
+	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_POODLL);
 
 	lpStrings[0] = username.c_str();
 	(void)ReportEventW(hEventLog, EVENTLOG_INFORMATION_TYPE, 0, PASSWORDCHANGENOTIFY, NULL, 1, 0, lpStrings, NULL);
@@ -124,7 +124,7 @@ extern "C" __declspec(dllexport) BOOLEAN PasswordFilter(PUNICODE_STRING AccountN
 
 	DWORD sAccountName, sCharset, sDictionary, sDiversity, sFullName, sHIBP, sLength, sRegex, sRepetition, sSHA1, sStraight;
 
-	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER);
+	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_POODLL);
 
 	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_ACCOUNTNAME, L"Armed", &sAccountName, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;

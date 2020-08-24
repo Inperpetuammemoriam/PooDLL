@@ -1,5 +1,5 @@
 ;/*
-; * PasswordFilter.dll: DLL implementing the Password Filter functions
+; * PooDLL.dll: DLL implementing the Password Filter functions
 ; * Copyright (C) 2018-2020  Inperpetuammemoriam
 ; *
 ; * This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,12 @@
 LanguageNames=(English=0x409:MSG00409)
 
 MessageIdTypedef=DWORD
+
+MessageId=
+SymbolicName=COPYRIGHT
+Language=English
+PooDLL.dll  Copyright (C) 2018-2019  Inperpetuammemoriam%nThis program comes with ABSOLUTELY NO WARRANTY.%nThis is free software, and you are welcome to redistribute it%nunder certain conditions.
+.
 
 ;// Categories
 
@@ -130,12 +136,6 @@ MessageId=
 SymbolicName=FILESTREAM_OPEN_ERROR
 Language=English
 Could not open file "%1".
-.
-
-MessageId=
-SymbolicName=INITIALIZECHANGENOTIFY
-Language=English
-PasswordFilter.dll  Copyright (C) 2018-2020  Inperpetuammemoriam%nThis program comes with ABSOLUTELY NO WARRANTY.%nThis is free software, and you are welcome to redistribute it%nunder certain conditions.
 .
 
 MessageId=
