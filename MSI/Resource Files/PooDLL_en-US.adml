@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  PooDLL.adml: ADML for the corresponding Password Filter DLL
+  Copyright (C) 2018-2020  Inperpetuammemoriam
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<policyDefinitionResources xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions" revision="1.0" schemaVersion="1.0">
+  <displayName>PooDLL</displayName>
+  <description>This file contains the Contoso parent category.</description>
+  <resources>
+    <stringTable>
+      <string id="PooDLL">PooDLL</string>
+      <string id="PooDLL_ET">Lorem ipsum dolor sit amet</string>
+      <string id="AccountName">Check passwords for components of the account name</string>
+      <string id="AccountName_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\AccountName.</string>
+      <string id="Charset">Check passwords for a minimal count of characters from different character sets</string>
+      <string id="Charset_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\Charset.</string>
+      <string id="Dictionary">Check passwords for occurrences of words from a dictionary</string>
+      <string id="Dictionary_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\Dictionary.</string>
+      <string id="Diversity">Check passwords for character diversity</string>
+      <string id="Diversity_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\Diversity.</string>
+      <string id="FullName">Check passwords for components of the user's full name</string>
+      <string id="FullName_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\FullName.</string>
+      <string id="HIBP">Check passwords against HIBP</string>
+      <string id="HIBP_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\HIBP.</string>
+      <string id="Length">Check passwords against length requirements</string>
+      <string id="Length_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\Length.</string>
+      <string id="Regex">Check passwords against lists of regular expressions</string>
+      <string id="Regex_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\Regex.</string>
+      <string id="Repetition">Check passwords for recurring patterns</string>
+      <string id="Repetition_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\Repetition.</string>
+      <string id="SHA1">Check passwords for occurrences in lists of SHA1 hashes</string>
+      <string id="SHA1_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\SHA1.</string>
+      <string id="Straight">Check passwords for sequences of adjacent characters</string>
+      <string id="Straight_ET">If this policy is enabled, then this filter will be enabled and its settings override the default settings.
+
+If this policy is disabled, then this filter will be disabled regardless of the default settings.
+
+If this policy is not configured, then the configuration of this filter depends on the default settings.
+
+The default settings are located under HKLM\SOFTWARE\PS0\PooDLL\Straight.</string>
+    </stringTable>
+    <presentationTable>
+      <presentation id="AccountName">
+        <checkBox refId="AccountName_CaseSensitivity" defaultChecked="false">Case sensitivity</checkBox>
+        <textBox refId="AccountName_ComponentSeparators">
+          <label>Component separators</label>
+          <defaultValue>,.-_ 	</defaultValue>
+        </textBox>
+        <decimalTextBox refId="AccountName_MinimumComponentLength" defaultValue="3">Minimum component length</decimalTextBox>
+      </presentation>
+      <presentation id="Charset">
+        <decimalTextBox refId="Charset_Digits" defaultValue="1">Digits</decimalTextBox>
+        <decimalTextBox refId="Charset_LowercaseLetters" defaultValue="1">Lowercase letters</decimalTextBox>
+        <decimalTextBox refId="Charset_NonAlphanumericCharacters" defaultValue="1">Non-alphanumerical characters</decimalTextBox>
+        <decimalTextBox refId="Charset_UppercaseLetters" defaultValue="1">Uppercase letters</decimalTextBox>
+      </presentation>
+      <presentation id="Dictionary">
+        <checkBox refId="Dictionary_CaseSensitivity" defaultChecked="false">Case sensitivity</checkBox>
+        <multiTextBox refId="Dictionary_Data">Data</multiTextBox>
+      </presentation>
+      <presentation id="Diversity">
+        <decimalTextBox refId="Diversity_MaximumNumberOfIdenticalCharacters" defaultValue="5">Maximum number of identical characters</decimalTextBox>
+        <decimalTextBox refId="Diversity_MinimumNumberOfDifferentCharacters" defaultValue="10">Minimum number of different characters</decimalTextBox>
+      </presentation>
+      <presentation id="FullName">
+        <checkBox refId="FullName_CaseSensitivity" defaultChecked="false">Case sensitivity</checkBox>
+        <textBox refId="FullName_ComponentSeparators">
+          <label>Component separators</label>
+          <defaultValue>,.-_ 	</defaultValue>
+        </textBox>
+        <decimalTextBox refId="FullName_MinimumComponentLength" defaultValue="3">Minimum component length</decimalTextBox>
+      </presentation>
+      <presentation id="HIBP">
+        <decimalTextBox refId="HIBP_SurmountabilityThreshold" defaultValue="2">Surmountability threshold</decimalTextBox>
+      </presentation>
+      <presentation id="Length">
+        <decimalTextBox refId="Length_MandatoryMaximumPasswordLength" defaultValue="256">Mandatory maximum password length</decimalTextBox>
+        <decimalTextBox refId="Length_MandatoryMinimumPasswordLength" defaultValue="8">Mandatory minimum password length</decimalTextBox>
+        <decimalTextBox refId="Length_MaximumPasswordLength" defaultValue="127">Maximum password length</decimalTextBox>
+        <decimalTextBox refId="Length_MinimumPasswordLength" defaultValue="16">Minimum password length</decimalTextBox>
+      </presentation>
+      <presentation id="Regex">
+        <multiTextBox refId="Regex_InsurmountableData">Insurmountable data</multiTextBox>
+        <multiTextBox refId="Regex_SurmountableData">Surmountable data</multiTextBox>
+      </presentation>
+      <presentation id="Repetition">
+        <checkBox refId="Repetition_CharacterSequenceCaseSensitivity" defaultChecked="false">Character sequence case sensitivity</checkBox>
+        <decimalTextBox refId="Repetition_MaximumIdenticalConsecutiveCharacters" defaultValue="2">Maximum identical consecutive characters</decimalTextBox>
+        <decimalTextBox refId="Repetition_MinimumCharacterSequenceLength" defaultValue="3">Minimum character sequence length</decimalTextBox>
+      </presentation>
+      <presentation id="SHA1">
+        <multiTextBox refId="SHA1_InsurmountableData">Insurmountable data</multiTextBox>
+        <multiTextBox refId="SHA1_SurmountableData">Surmountable data</multiTextBox>
+      </presentation>
+      <presentation id="Straight">
+        <decimalTextBox refId="Straight_MinimumSequenceLength" defaultValue="5">Minimum sequence length</decimalTextBox>
+      </presentation>
+    </presentationTable>
+  </resources>
+</policyDefinitionResources>

@@ -39,6 +39,7 @@
     <Feature Id="ProductFeature" Title="$(var.SolutionName)MSI" Level="1">
       <ComponentGroupRef Id="CORE" />
       <ComponentRef Id="CLI" />
+      <ComponentGroupRef Id="ADM" />
       <ComponentGroupRef Id="LICENSES" />
     </Feature>
   </Product>
@@ -51,6 +52,11 @@
             <Directory Id="Regex" Name="Regex" />
             <Directory Id="SHA1" Name="SHA1" />
           </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="WindowsFolder">
+        <Directory Id="PolicyDefinitions" Name="policyDefinitions">
+          <Directory Id="EN_US" Name="en-US" />
         </Directory>
       </Directory>
       <Directory Id="$(var.PlatformSystemFolder)" />
@@ -255,6 +261,14 @@
         <?endif ?>
       <?endif ?>
     </Component>
+    <ComponentGroup Id="ADM">
+      <Component Id="$(var.SolutionName)_EN_US_ADML" Guid="CD0EE17E-179C-49D7-B34C-23133FB45AC8" Directory="EN_US">
+        <File Id="$(var.SolutionName)_en_us.adml" Name="$(var.SolutionName).adml" Source="Resource Files\$(var.SolutionName)_en-US.adml" />
+      </Component>
+      <Component Id="$(var.SolutionName)_ADMX" Guid="5FB436FE-1499-4A7C-9D69-355759634F93" Directory="PolicyDefinitions">
+        <File Id="$(var.SolutionName).admx" Name="$(var.SolutionName).admx" Source="Resource Files\$(var.SolutionName).admx" />
+      </Component>
+    </ComponentGroup>
     <ComponentGroup Id="LICENSES">
       <Component Id="FA_LICENSE" Guid="CEB62F2F-7E81-4067-8994-DCE1A064CBD9" Directory="FontAwesome">
         <File Id="FA_LICENSE" Name="LICENSE.txt" Source="Resource Files\Font Awesome\LICENSE.txt" />

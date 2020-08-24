@@ -48,20 +48,21 @@
 #define SOLUTION L"PasswordFilter"
 
 #define DATA_FOLDER L"C:\\ProgramData\\" MANUFACTURER L"\\" SOLUTION
-#define REG_FOLDER L"SOFTWARE\\" MANUFACTURER L"\\" SOLUTION
-#define ACCOUNTNAME_REG_FOLDER REG_FOLDER L"\\AccountName"
-#define CHARSET_REG_FOLDER REG_FOLDER L"\\Charset"
-#define DICTIONARY_REG_FOLDER REG_FOLDER L"\\Dictionary"
-#define DIVERSITY_REG_FOLDER REG_FOLDER L"\\Diversity"
-#define FULLNAME_REG_FOLDER REG_FOLDER L"\\FullName"
-#define HIBP_REG_FOLDER REG_FOLDER L"\\HIBP"
-#define LENGTH_REG_FOLDER REG_FOLDER L"\\Length"
-#define REGEX_DATA_FOLDER DATA_FOLDER L"\\Regex"
-#define REGEX_REG_FOLDER REG_FOLDER L"\\Regex"
-#define REPETITION_REG_FOLDER REG_FOLDER L"\\Repetition"
-#define SHA1_DATA_FOLDER DATA_FOLDER L"\\SHA1"
-#define SHA1_REG_FOLDER REG_FOLDER L"\\SHA1"
-#define STRAIGHT_REG_FOLDER REG_FOLDER L"\\Straight"
+#define DATA_FOLDER_REGEX DATA_FOLDER L"\\Regex"
+#define DATA_FOLDER_SHA1 DATA_FOLDER L"\\SHA1"
+#define POLICY_FOLDER L"SOFTWARE\\Policies\\" MANUFACTURER L"\\" SOLUTION
+#define REGISTRY_FOLDER L"SOFTWARE\\" MANUFACTURER L"\\" SOLUTION
+#define REGISTRY_FOLDER_ACCOUNTNAME REGISTRY_FOLDER L"\\AccountName"
+#define REGISTRY_FOLDER_CHARSET REGISTRY_FOLDER L"\\Charset"
+#define REGISTRY_FOLDER_DICTIONARY REGISTRY_FOLDER L"\\Dictionary"
+#define REGISTRY_FOLDER_DIVERSITY REGISTRY_FOLDER L"\\Diversity"
+#define REGISTRY_FOLDER_FULLNAME REGISTRY_FOLDER L"\\FullName"
+#define REGISTRY_FOLDER_HIBP REGISTRY_FOLDER L"\\HIBP"
+#define REGISTRY_FOLDER_LENGTH REGISTRY_FOLDER L"\\Length"
+#define REGISTRY_FOLDER_REGEX REGISTRY_FOLDER L"\\Regex"
+#define REGISTRY_FOLDER_REPETITION REGISTRY_FOLDER L"\\Repetition"
+#define REGISTRY_FOLDER_SHA1 REGISTRY_FOLDER L"\\SHA1"
+#define REGISTRY_FOLDER_STRAIGHT REGISTRY_FOLDER L"\\Straight"
 
 using namespace std;
 
@@ -69,9 +70,9 @@ LPVOID Alloc(SIZE_T dwBytes, NTSTATUS *status, HANDLE hEventLog);
 NTSTATUS BCryptComputeHash(PUNICODE_STRING Password, string *hash, HANDLE hEventLog);
 BOOL Free(PVOID lpMem, HANDLE hEventLog);
 LPCWSTR HKEYtoString(HKEY hkey);
-LSTATUS RegGetDWORD(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, DWORD *dword, HANDLE hEventLog);
-LSTATUS RegGetMULTISZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, deque<wstring> *multisz, HANDLE hEventLog);
-LSTATUS RegGetSZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, wstring *sz, HANDLE hEventLog);
+LSTATUS RegGetDWORD(HKEY hkey, wstring lpSubKey, wstring lpValue, DWORD *dword, HANDLE hEventLog);
+LSTATUS RegGetMULTISZ(HKEY hkey, wstring lpSubKey, wstring lpValue, deque<wstring> *multisz, HANDLE hEventLog);
+LSTATUS RegGetSZ(HKEY hkey, wstring lpSubKey, wstring lpValue, wstring *sz, HANDLE hEventLog);
 string WinHTTPGet(LPCWSTR pswzServerName, INTERNET_PORT nServerPort, LPCWSTR pwszVerb, LPCWSTR *ppwszAcceptTypes, DWORD dwFlags, HANDLE hEventLog);
 
 BOOLEAN PasswordFilterAccountName(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
@@ -125,57 +126,57 @@ extern "C" __declspec(dllexport) BOOLEAN PasswordFilter(PUNICODE_STRING AccountN
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, ACCOUNTNAME_REG_FOLDER, L"Armed", &sAccountName, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_ACCOUNTNAME, L"Armed", &sAccountName, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sAccountName && !PasswordFilterAccountName(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, CHARSET_REG_FOLDER, L"Armed", &sCharset, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_CHARSET, L"Armed", &sCharset, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sCharset && !PasswordFilterCharset(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, DICTIONARY_REG_FOLDER, L"Armed", &sDictionary, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_DICTIONARY, L"Armed", &sDictionary, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sDictionary && !PasswordFilterDictionary(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, DIVERSITY_REG_FOLDER, L"Armed", &sDiversity, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_DIVERSITY, L"Armed", &sDiversity, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sDiversity && !PasswordFilterDiversity(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, FULLNAME_REG_FOLDER, L"Armed", &sFullName, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_FULLNAME, L"Armed", &sFullName, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sFullName && !PasswordFilterFullName(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, HIBP_REG_FOLDER, L"Armed", &sHIBP, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_HIBP, L"Armed", &sHIBP, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sHIBP && !PasswordFilterHIBP(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Armed", &sLength, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_LENGTH, L"Armed", &sLength, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sLength && !PasswordFilterLength(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGEX_REG_FOLDER, L"Armed", &sRegex, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_REGEX, L"Armed", &sRegex, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sRegex && !PasswordFilterRegex(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REPETITION_REG_FOLDER, L"Armed", &sRepetition, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_REPETITION, L"Armed", &sRepetition, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sRepetition && !PasswordFilterRepetition(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, SHA1_REG_FOLDER, L"Armed", &sSHA1, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_SHA1, L"Armed", &sSHA1, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sSHA1 && !PasswordFilterSHA1(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, STRAIGHT_REG_FOLDER, L"Armed", &sStraight, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_STRAIGHT, L"Armed", &sStraight, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sSHA1 && !PasswordFilterSHA1(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
@@ -401,7 +402,9 @@ LPCWSTR HKEYtoString(HKEY hkey) {
 		return L"";
 }
 
-LSTATUS RegGetDWORD(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, DWORD *dword, HANDLE hEventLog) {
+LSTATUS RegGetDWORD(HKEY hkey, wstring lpSubKey, wstring lpValue, DWORD *dword, HANDLE hEventLog) {
+	wstring registryFolder = REGISTRY_FOLDER;
+
 	LSTATUS sec;
 
 	LPCWSTR lpStrings[4];
@@ -409,11 +412,26 @@ LSTATUS RegGetDWORD(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, DWORD *dword, 
 	DWORD pcbData;
 
 	lpStrings[0] = HKEYtoString(hkey);
-	lpStrings[1] = lpSubKey;
-	lpStrings[2] = lpValue;
+	lpStrings[1] = lpSubKey.c_str();
+	lpStrings[2] = lpValue.c_str();
 
 	pcbData = sizeof(DWORD);
-	if ((sec = RegGetValueW(hkey, lpSubKey, lpValue, RRF_RT_REG_DWORD, NULL, dword, &pcbData)) != ERROR_SUCCESS) {
+
+	if (hkey == HKEY_LOCAL_MACHINE && registryFolder.length() <= lpSubKey.length() && lpSubKey.compare(0, registryFolder.length(), registryFolder) == 0) {
+		sec = RegGetValueW(hkey, (POLICY_FOLDER + lpSubKey.substr(registryFolder.length(), lpSubKey.length() - registryFolder.length())).c_str(), lpValue.c_str(), RRF_RT_REG_DWORD, NULL, dword, &pcbData);
+		switch (sec) {
+		case ERROR_SUCCESS:
+			goto Cleanup;
+		case ERROR_FILE_NOT_FOUND:
+			break;
+		default:
+			(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
+			(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_VALUE_ERROR, NULL, 4, 0, lpStrings, NULL);
+			goto Cleanup;
+		}
+	}
+
+	if ((sec = RegGetValueW(hkey, lpSubKey.c_str(), lpValue.c_str(), RRF_RT_REG_DWORD, NULL, dword, &pcbData)) != ERROR_SUCCESS) {
 		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
 		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_VALUE_ERROR, NULL, 4, 0, lpStrings, NULL);
 		goto Cleanup;
@@ -423,7 +441,9 @@ Cleanup:
 	return sec;
 }
 
-LSTATUS RegGetMULTISZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, deque<wstring> *multisz, HANDLE hEventLog) {
+LSTATUS RegGetMULTISZ(HKEY hkey, wstring lpSubKey, wstring lpValue, deque<wstring> *multisz, HANDLE hEventLog) {
+	wstring registryFolder = REGISTRY_FOLDER;
+
 	LSTATUS sec;
 
 	NTSTATUS status;
@@ -434,10 +454,36 @@ LSTATUS RegGetMULTISZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, deque<wstrin
 	PWCHAR pwChar;
 
 	lpStrings[0] = HKEYtoString(hkey);
-	lpStrings[1] = lpSubKey;
-	lpStrings[2] = lpValue;
+	lpStrings[1] = lpSubKey.c_str();
+	lpStrings[2] = lpValue.c_str();
 
-	if ((sec = RegGetValueW(hkey, lpSubKey, lpValue, RRF_RT_REG_MULTI_SZ, NULL, NULL, &pcbData)) != ERROR_SUCCESS) {
+	if (hkey == HKEY_LOCAL_MACHINE && registryFolder.length() <= lpSubKey.length() && lpSubKey.compare(0, registryFolder.length(), registryFolder) == 0) {
+		sec = RegGetValueW(hkey, (POLICY_FOLDER + lpSubKey.substr(registryFolder.length(), lpSubKey.length() - registryFolder.length())).c_str(), lpValue.c_str(), RRF_RT_REG_MULTI_SZ, NULL, NULL, &pcbData);
+		switch (sec) {
+		case ERROR_SUCCESS:
+			pwChar = (PWCHAR)Alloc(pcbData * sizeof(WCHAR), &status, hEventLog);
+			if (pwChar == NULL)
+				goto Cleanup;
+			if ((sec = RegGetValueW(hkey, (POLICY_FOLDER + lpSubKey.substr(registryFolder.length(), lpSubKey.length() - registryFolder.length())).c_str(), lpValue.c_str(), RRF_RT_REG_MULTI_SZ, NULL, pwChar, &pcbData)) != ERROR_SUCCESS) {
+				(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
+				(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_VALUE_ERROR, NULL, 4, 0, lpStrings, NULL);
+				goto Cleanup;
+			}
+			while (*pwChar != L'\0') {
+				multisz->push_back(pwChar);
+				pwChar += wcslen(pwChar) + 1;
+			}
+			goto Cleanup;
+		case ERROR_FILE_NOT_FOUND:
+			break;
+		default:
+			(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
+			(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_SIZE_ERROR, NULL, 4, 0, lpStrings, NULL);
+			goto Cleanup;
+		}
+	}
+
+	if ((sec = RegGetValueW(hkey, lpSubKey.c_str(), lpValue.c_str(), RRF_RT_REG_MULTI_SZ, NULL, NULL, &pcbData)) != ERROR_SUCCESS) {
 		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
 		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_SIZE_ERROR, NULL, 4, 0, lpStrings, NULL);
 		goto Cleanup;
@@ -447,7 +493,7 @@ LSTATUS RegGetMULTISZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, deque<wstrin
 	if (pwChar == NULL)
 		goto Cleanup;
 
-	if ((sec = RegGetValueW(hkey, lpSubKey, lpValue, RRF_RT_REG_MULTI_SZ, NULL, pwChar, &pcbData)) != ERROR_SUCCESS) {
+	if ((sec = RegGetValueW(hkey, lpSubKey.c_str(), lpValue.c_str(), RRF_RT_REG_MULTI_SZ, NULL, pwChar, &pcbData)) != ERROR_SUCCESS) {
 		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
 		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_VALUE_ERROR, NULL, 4, 0, lpStrings, NULL);
 		goto Cleanup;
@@ -462,7 +508,9 @@ Cleanup:
 	return sec;
 }
 
-LSTATUS RegGetSZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, wstring *sz, HANDLE hEventLog) {
+LSTATUS RegGetSZ(HKEY hkey, wstring lpSubKey, wstring lpValue, wstring *sz, HANDLE hEventLog) {
+	wstring registryFolder = REGISTRY_FOLDER;
+
 	LSTATUS sec;
 
 	NTSTATUS status;
@@ -473,10 +521,33 @@ LSTATUS RegGetSZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, wstring *sz, HAND
 	PWCHAR pwChar;
 
 	lpStrings[0] = HKEYtoString(hkey);
-	lpStrings[1] = lpSubKey;
-	lpStrings[2] = lpValue;
+	lpStrings[1] = lpSubKey.c_str();
+	lpStrings[2] = lpValue.c_str();
 
-	if ((sec = RegGetValueW(hkey, lpSubKey, lpValue, RRF_RT_REG_SZ, NULL, NULL, &pcbData)) != ERROR_SUCCESS) {
+	if (hkey == HKEY_LOCAL_MACHINE && registryFolder.length() <= lpSubKey.length() && lpSubKey.compare(0, registryFolder.length(), registryFolder) == 0) {
+		sec = RegGetValueW(hkey, (POLICY_FOLDER + lpSubKey.substr(registryFolder.length(), lpSubKey.length() - registryFolder.length())).c_str(), lpValue.c_str(), RRF_RT_REG_SZ, NULL, NULL, &pcbData);
+		switch (sec) {
+		case ERROR_SUCCESS:
+			pwChar = (PWCHAR)Alloc(pcbData * sizeof(WCHAR), &status, hEventLog);
+			if (pwChar == NULL)
+				goto Cleanup;
+			if ((sec = RegGetValueW(hkey, (POLICY_FOLDER + lpSubKey.substr(registryFolder.length(), lpSubKey.length() - registryFolder.length())).c_str(), lpValue.c_str(), RRF_RT_REG_SZ, NULL, pwChar, &pcbData)) != ERROR_SUCCESS) {
+				(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
+				(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_VALUE_ERROR, NULL, 4, 0, lpStrings, NULL);
+				goto Cleanup;
+			}
+			sz->assign(pwChar);
+			goto Cleanup;
+		case ERROR_FILE_NOT_FOUND:
+			break;
+		default:
+			(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
+			(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_SIZE_ERROR, NULL, 4, 0, lpStrings, NULL);
+			goto Cleanup;
+		}
+	}
+
+	if ((sec = RegGetValueW(hkey, lpSubKey.c_str(), lpValue.c_str(), RRF_RT_REG_SZ, NULL, NULL, &pcbData)) != ERROR_SUCCESS) {
 		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
 		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_SIZE_ERROR, NULL, 4, 0, lpStrings, NULL);
 		goto Cleanup;
@@ -486,7 +557,7 @@ LSTATUS RegGetSZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, wstring *sz, HAND
 	if (pwChar == NULL)
 		goto Cleanup;
 
-	if ((sec = RegGetValueW(hkey, lpSubKey, lpValue, RRF_RT_REG_SZ, NULL, pwChar, &pcbData)) != ERROR_SUCCESS) {
+	if ((sec = RegGetValueW(hkey, lpSubKey.c_str(), lpValue.c_str(), RRF_RT_REG_SZ, NULL, pwChar, &pcbData)) != ERROR_SUCCESS) {
 		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, sec, 0, (LPWSTR)&lpStrings[3], 0, NULL);
 		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, REGISTRY_ERRORS, REGISTRY_REGGETVALUE_VALUE_ERROR, NULL, 4, 0, lpStrings, NULL);
 		goto Cleanup;
@@ -508,39 +579,39 @@ string WinHTTPGet(LPCWSTR pswzServerName, INTERNET_PORT nServerPort, LPCWSTR pws
 	PCHAR pszOutBuffer = NULL;
 	string response;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REG_FOLDER, L"WinHTTP Connect Timeout", &nConnectTimeout, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER, L"WinHTTP Connect Timeout", &nConnectTimeout, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REG_FOLDER, L"WinHTTP Receive Timeout", &nReceiveTimeout, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER, L"WinHTTP Receive Timeout", &nReceiveTimeout, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REG_FOLDER, L"WinHTTP Resolve Timeout", &nResolveTimeout, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER, L"WinHTTP Resolve Timeout", &nResolveTimeout, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REG_FOLDER, L"WinHTTP Send Timeout", &nSendTimeout, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER, L"WinHTTP Send Timeout", &nSendTimeout, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	if ((int)nConnectTimeout < 0) {
 		nConnectTimeout = 60000;
-		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REG_FOLDER L"\\WinHTTP Connect Timeout";
+		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REGISTRY_FOLDER L"\\WinHTTP Connect Timeout";
 		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, WINHTTP_ERRORS, WINHTTP_TIMEOUT_VALUE_WARNING, NULL, 1, 0, lpStrings, NULL);
 	}
 
 	if ((int)nReceiveTimeout < 0) {
 		nReceiveTimeout = 30000;
-		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REG_FOLDER L"\\WinHTTP Receive Timeout";
+		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REGISTRY_FOLDER L"\\WinHTTP Receive Timeout";
 		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, WINHTTP_ERRORS, WINHTTP_TIMEOUT_VALUE_WARNING, NULL, 1, 0, lpStrings, NULL);
 	}
 
 	if ((int)nResolveTimeout < 0) {
 		nResolveTimeout = 0;
-		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REG_FOLDER L"\\WinHTTP Resolve Timeout";
+		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REGISTRY_FOLDER L"\\WinHTTP Resolve Timeout";
 		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, WINHTTP_ERRORS, WINHTTP_TIMEOUT_VALUE_WARNING, NULL, 1, 0, lpStrings, NULL);
 	}
 
 	if ((int)nSendTimeout < 0) {
 		nSendTimeout = 30000;
-		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REG_FOLDER L"\\WinHTTP Send Timeout";
+		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REGISTRY_FOLDER L"\\WinHTTP Send Timeout";
 		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, WINHTTP_ERRORS, WINHTTP_TIMEOUT_VALUE_WARNING, NULL, 1, 0, lpStrings, NULL);
 	}
 
@@ -652,13 +723,13 @@ BOOLEAN PasswordFilterAccountName(PUNICODE_STRING AccountName, PUNICODE_STRING F
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_ACCOUNTNAME);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, ACCOUNTNAME_REG_FOLDER, L"Case sensitivity", &cSensitivity, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_ACCOUNTNAME, L"Case sensitivity", &cSensitivity, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetSZ(HKEY_LOCAL_MACHINE, ACCOUNTNAME_REG_FOLDER, L"Component separators", &cSeparators, hEventLog) != ERROR_SUCCESS)
+	if (RegGetSZ(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_ACCOUNTNAME, L"Component separators", &cSeparators, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, ACCOUNTNAME_REG_FOLDER, L"Minimum component length", &minLength, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_ACCOUNTNAME, L"Minimum component length", &minLength, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	if (!cSensitivity) {
@@ -706,16 +777,16 @@ BOOLEAN PasswordFilterCharset(PUNICODE_STRING AccountName, PUNICODE_STRING FullN
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_CHARSET);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, CHARSET_REG_FOLDER, L"Digits", &minDigits, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_CHARSET, L"Digits", &minDigits, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, CHARSET_REG_FOLDER, L"Lowercase letters", &minLowercase, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_CHARSET, L"Lowercase letters", &minLowercase, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, CHARSET_REG_FOLDER, L"Non-alphanumeric character", &minNonAlphanumeric, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_CHARSET, L"Non-alphanumeric character", &minNonAlphanumeric, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, CHARSET_REG_FOLDER, L"Uppercase letters", &minUppercase, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_CHARSET, L"Uppercase letters", &minUppercase, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	for (unsigned int i = 0; i < password.length(); i++) {
@@ -799,17 +870,17 @@ BOOLEAN PasswordFilterDictionary(PUNICODE_STRING AccountName, PUNICODE_STRING Fu
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_DICTIONARY);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, DICTIONARY_REG_FOLDER, L"Case sensitivity", &cSensitivity, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_DICTIONARY, L"Case sensitivity", &cSensitivity, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, DICTIONARY_REG_FOLDER, L"Data", &data, hEventLog) != ERROR_SUCCESS)
+	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_DICTIONARY, L"Data", &data, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	if (!cSensitivity)
 		(void)transform(pBuffer.begin(), pBuffer.end(), pBuffer.begin(), ::tolower);
 
 	for (wstring e : data) {
-		filename.assign(REGEX_DATA_FOLDER L"\\");
+		filename.assign(DATA_FOLDER_REGEX L"\\");
 		filename.append(e);
 		ifs.open(filename);
 		if (!ifs.is_open()) {
@@ -859,10 +930,10 @@ BOOLEAN PasswordFilterDiversity(PUNICODE_STRING AccountName, PUNICODE_STRING Ful
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_DIVERSITY);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, DIVERSITY_REG_FOLDER, L"Maximum number of identical characters", &maxIdentical, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_DIVERSITY, L"Maximum number of identical characters", &maxIdentical, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, DIVERSITY_REG_FOLDER, L"Minimum number of different characters", &minDifferent, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_DIVERSITY, L"Minimum number of different characters", &minDifferent, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	for (unsigned int i = 0; i < password.length(); i++) {
@@ -920,13 +991,13 @@ BOOLEAN PasswordFilterFullName(PUNICODE_STRING AccountName, PUNICODE_STRING Full
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_FULLNAME);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, FULLNAME_REG_FOLDER, L"Case sensitivity", &cSensitivity, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_FULLNAME, L"Case sensitivity", &cSensitivity, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetSZ(HKEY_LOCAL_MACHINE, FULLNAME_REG_FOLDER, L"Component separators", &cSeparators, hEventLog) != ERROR_SUCCESS)
+	if (RegGetSZ(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_FULLNAME, L"Component separators", &cSeparators, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, FULLNAME_REG_FOLDER, L"Minimum component length", &minLength, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_FULLNAME, L"Minimum component length", &minLength, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	if (!cSensitivity) {
@@ -977,7 +1048,7 @@ BOOLEAN PasswordFilterHIBP(PUNICODE_STRING AccountName, PUNICODE_STRING FullName
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_HIBP);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, HIBP_REG_FOLDER, L"Surmountability threshold", &sThreshold, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_HIBP, L"Surmountability threshold", &sThreshold, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	if (BCryptComputeHash(Password, &hash, hEventLog) != STATUS_SUCCESS)
@@ -1036,16 +1107,16 @@ BOOLEAN PasswordFilterLength(PUNICODE_STRING AccountName, PUNICODE_STRING FullNa
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_LENGTH);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Mandatory maximum password length", &manMaxLength, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_LENGTH, L"Mandatory maximum password length", &manMaxLength, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Mandatory Minimum password length", &minLength, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_LENGTH, L"Mandatory Minimum password length", &minLength, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Maximum password length", &maxLength, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_LENGTH, L"Maximum password length", &maxLength, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Minimum password length", &manMinLength, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_LENGTH, L"Minimum password length", &manMinLength, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	if (password.length() > manMaxLength) {
@@ -1107,15 +1178,15 @@ BOOLEAN PasswordFilterRegex(PUNICODE_STRING AccountName, PUNICODE_STRING FullNam
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_REGEX);
 
-	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, REGEX_REG_FOLDER, L"Insurmountable data", &iData, hEventLog) != ERROR_SUCCESS)
+	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_REGEX, L"Insurmountable data", &iData, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, REGEX_REG_FOLDER, L"Surmountable data", &sData, hEventLog) != ERROR_SUCCESS)
+	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_REGEX, L"Surmountable data", &sData, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	for (deque<wstring> data : {iData, sData}) {
 		for (wstring e : data) {
-			filename.assign(REGEX_DATA_FOLDER L"\\");
+			filename.assign(DATA_FOLDER_REGEX L"\\");
 			filename.append(e);
 			ifs.open(filename);
 			if (!ifs.is_open()) {
@@ -1178,13 +1249,13 @@ BOOLEAN PasswordFilterRepetition(PUNICODE_STRING AccountName, PUNICODE_STRING Fu
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_REPETITION);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REPETITION_REG_FOLDER, L"Character sequence case sensitivity", &cSensitivity, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_REPETITION, L"Character sequence case sensitivity", &cSensitivity, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REPETITION_REG_FOLDER, L"Maximum identical consecutive characters", &maxICC, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_REPETITION, L"Maximum identical consecutive characters", &maxICC, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REPETITION_REG_FOLDER, L"Minimum character sequence length", &minLength, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_REPETITION, L"Minimum character sequence length", &minLength, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	for (unsigned int i = 1; i < password.length(); i++) {
@@ -1247,10 +1318,10 @@ BOOLEAN PasswordFilterSHA1(PUNICODE_STRING AccountName, PUNICODE_STRING FullName
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_SHA1);
 
-	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, SHA1_REG_FOLDER, L"Insurmountable data", &iData, hEventLog) != ERROR_SUCCESS)
+	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_SHA1, L"Insurmountable data", &iData, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
-	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, SHA1_REG_FOLDER, L"Surmountable data", &sData, hEventLog) != ERROR_SUCCESS)
+	if (RegGetMULTISZ(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_SHA1, L"Surmountable data", &sData, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	if (BCryptComputeHash(Password, &b, hEventLog) != STATUS_SUCCESS)
@@ -1258,7 +1329,7 @@ BOOLEAN PasswordFilterSHA1(PUNICODE_STRING AccountName, PUNICODE_STRING FullName
 
 	for (deque<wstring> data : {iData, sData}) {
 		for (wstring e : data) {
-			filename.assign(SHA1_DATA_FOLDER L"\\");
+			filename.assign(DATA_FOLDER_SHA1 L"\\");
 			filename.append(e);
 			ifs.open(filename, fstream::ate);
 			if (!ifs.is_open()) {
@@ -1331,7 +1402,7 @@ BOOLEAN PasswordFilterStraight(PUNICODE_STRING AccountName, PUNICODE_STRING Full
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_STRAIGHT);
 
-	if (RegGetDWORD(HKEY_LOCAL_MACHINE, STRAIGHT_REG_FOLDER, L"Minimum sequence length", &minLength, hEventLog) != ERROR_SUCCESS)
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGISTRY_FOLDER_STRAIGHT, L"Minimum sequence length", &minLength, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 
 	for (unsigned int i = 1; i < password.length(); i++) {

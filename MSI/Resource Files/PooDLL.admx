@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  PooDLL.admx: ADMX for the corresponding Password Filter DLL
+  Copyright (C) 2018-2020  Inperpetuammemoriam
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<policyDefinitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions" revision="1.1" schemaVersion="1.0">
+  <policyNamespaces>
+    <target prefix="PooDLL" namespace="PS0.Policies.PooDLL"/>
+  </policyNamespaces>
+  <resources minRequiredRevision="1.0"/>
+  <categories>
+    <category name="PooDLL" displayName="$(string.PooDLL)" explainText="$(string.PooDLL_ET)"/>
+  </categories>
+  <policies>
+    <policy name="AccountName" class="Machine" displayName="$(string.AccountName)" explainText="$(string.AccountName_ET)" presentation="$(presentation.AccountName)" key="SOFTWARE\Policies\PS0\PooDLL\AccountName" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <boolean id="AccountName_CaseSensitivity" valueName="Case sensitivity">
+          <trueValue>
+            <decimal value="1" />
+          </trueValue>
+          <falseValue>
+            <decimal value="0" />
+          </falseValue>
+        </boolean>
+        <text id="AccountName_ComponentSeparators" valueName="Component separators"/>
+        <decimal id="AccountName_MinimumComponentLength" valueName="Minimum component length" minValue="1"/>
+      </elements>
+    </policy>
+    <policy name="Charset" class="Machine" displayName="$(string.Charset)" explainText="$(string.Charset_ET)" presentation="$(presentation.Charset)" key="SOFTWARE\Policies\PS0\PooDLL\Charset" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <decimal id="Charset_Digits" valueName="Digits" minValue="0"/>
+        <decimal id="Charset_LowercaseLetters" valueName="Lowercase letters" minValue="0"/>
+        <decimal id="Charset_NonAlphanumericCharacters" valueName="Non-alphanumeric characters" minValue="0"/>
+        <decimal id="Charset_UppercaseLetters" valueName="Uppercase letters" minValue="0"/>
+      </elements>
+    </policy>
+    <policy name="Dictionary" class="Machine" displayName="$(string.Dictionary)" explainText="$(string.Dictionary_ET)" presentation="$(presentation.Dictionary)" key="SOFTWARE\Policies\PS0\PooDLL\Dictionary" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <boolean id="Dictionary_CaseSensitivity" valueName="Case sensitivity">
+          <trueValue>
+            <decimal value="1" />
+          </trueValue>
+          <falseValue>
+            <decimal value="0" />
+          </falseValue>
+        </boolean>
+        <multiText id="Dictionary_Data" valueName="Data"/>
+      </elements>
+    </policy>
+    <policy name="Diversity" class="Machine" displayName="$(string.Diversity)" explainText="$(string.Diversity_ET)" presentation="$(presentation.Diversity)" key="SOFTWARE\Policies\PS0\PooDLL\Diversity" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <decimal id="Diversity_MaximumNumberOfIdenticalCharacters" valueName="Maximum number of identical characters" minValue="5"/>
+        <decimal id="Diversity_MinimumNumberOfDifferentCharacters" valueName="Minimum number of different characters" minValue="10"/>
+      </elements>
+    </policy>
+    <policy name="FullName" class="Machine" displayName="$(string.FullName)" explainText="$(string.FullName_ET)" presentation="$(presentation.FullName)" key="SOFTWARE\Policies\PS0\PooDLL\FullName" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <boolean id="FullName_CaseSensitivity" valueName="Case sensitivity">
+          <trueValue>
+            <decimal value="1" />
+          </trueValue>
+          <falseValue>
+            <decimal value="0" />
+          </falseValue>
+        </boolean>
+        <text id="FullName_ComponentSeparators" valueName="Component separators"/>
+        <decimal id="FullName_MinimumComponentLength" valueName="Minimum component length" minValue="1"/>
+      </elements>
+    </policy>
+    <policy name="HIBP" class="Machine" displayName="$(string.HIBP)" explainText="$(string.HIBP_ET)" presentation="$(presentation.HIBP)" key="SOFTWARE\Policies\PS0\PooDLL\HIBP" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <decimal id="HIBP_SurmountabilityThreshold" valueName="Surmountability threshold" minValue="1"/>
+      </elements>
+    </policy>
+    <policy name="Length" class="Machine" displayName="$(string.Length)" explainText="$(string.Length_ET)" presentation="$(presentation.Length)" key="SOFTWARE\Policies\PS0\PooDLL\Length" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <decimal id="Length_MandatoryMaximumPasswordLength" valueName="Mandatory maximum password length"/>
+        <decimal id="Length_MandatoryMinimumPasswordLength" valueName="Mandatory minimum password length"/>
+        <decimal id="Length_MaximumPasswordLength" valueName="Maximum password length"/>
+        <decimal id="Length_MinimumPasswordLength" valueName="Minimum password length"/>
+      </elements>
+    </policy>
+    <policy name="Regex" class="Machine" displayName="$(string.Regex)" explainText="$(string.Regex_ET)" presentation="$(presentation.Regex)" key="SOFTWARE\Policies\PS0\PooDLL\Regex" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <multiText id="Regex_InsurmountableData" valueName="Insurmountable data"/>
+        <multiText id="Regex_SurmountableData" valueName="Surmountable data"/>
+      </elements>
+    </policy>
+    <policy name="Repetition" class="Machine" displayName="$(string.Repetition)" explainText="$(string.Repetition_ET)" presentation="$(presentation.Repetition)" key="SOFTWARE\Policies\PS0\PooDLL\Repetition" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+	    <boolean id="Repetition_CharacterSequenceCaseSensitivity" valueName="Character sequence case sensitivity">
+          <trueValue>
+            <decimal value="1" />
+          </trueValue>
+          <falseValue>
+            <decimal value="0" />
+          </falseValue>
+        </boolean>
+        <decimal id="Repetition_MaximumIdenticalConsecutiveCharacters" valueName="Maximum identical consecutive characters" minValue="1"/>
+        <decimal id="Repetition_MinimumCharacterSequenceLength" valueName="Minimum character sequence length" minValue="1"/>
+      </elements>
+    </policy>
+    <policy name="SHA1" class="Machine" displayName="$(string.SHA1)" explainText="$(string.SHA1_ET)" presentation="$(presentation.SHA1)" key="SOFTWARE\Policies\PS0\PooDLL\SHA1" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <multiText id="SHA1_InsurmountableData" valueName="Insurmountable data"/>
+        <multiText id="SHA1_SurmountableData" valueName="Surmountable data"/>
+      </elements>
+    </policy>
+    <policy name="Straight" class="Machine" displayName="$(string.Straight)" explainText="$(string.Straight_ET)" presentation="$(presentation.Straight)" key="SOFTWARE\Policies\PS0\PooDLL\Straight" valueName="Armed">
+      <parentCategory ref="PooDLL"/>
+      <supportedOn ref="SUPPORTED_ProductOnly"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+      <elements>
+        <decimal id="Straight_MinimumSequenceLength" valueName="Minimum sequence length" minValue="1"/>
+      </elements>
+    </policy>
+  </policies>
+</policyDefinitions>
