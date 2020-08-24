@@ -39,6 +39,7 @@
 #define EVENTLOG_SOURCE_PASSWORDFILTER_DIVERSITY L"PasswordFilterDiversity"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_FULLNAME L"PasswordFilterFullName"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_HIBP L"PasswordFilterHIBP"
+#define EVENTLOG_SOURCE_PASSWORDFILTER_LENGTH L"PasswordFilterLength"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_REGEX L"PasswordFilterRegex"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_REPETITION L"PasswordFilterRepetition"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_SHA1 L"PasswordFilterSHA1"
@@ -54,6 +55,7 @@
 #define DIVERSITY_REG_FOLDER REG_FOLDER L"\\Diversity"
 #define FULLNAME_REG_FOLDER REG_FOLDER L"\\FullName"
 #define HIBP_REG_FOLDER REG_FOLDER L"\\HIBP"
+#define LENGTH_REG_FOLDER REG_FOLDER L"\\Length"
 #define REGEX_DATA_FOLDER DATA_FOLDER L"\\Regex"
 #define REGEX_REG_FOLDER REG_FOLDER L"\\Regex"
 #define REPETITION_REG_FOLDER REG_FOLDER L"\\Repetition"
@@ -78,6 +80,7 @@ BOOLEAN PasswordFilterDictionary(PUNICODE_STRING AccountName, PUNICODE_STRING Fu
 BOOLEAN PasswordFilterFullName(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterDiversity(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterHIBP(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
+BOOLEAN PasswordFilterLength(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterRegex(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterRepetition(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterSHA1(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
@@ -118,7 +121,7 @@ extern "C" __declspec(dllexport) BOOLEAN PasswordFilter(PUNICODE_STRING AccountN
 
 	HANDLE hEventLog;
 
-	DWORD sAccountName, sCharset, sDictionary, sDiversity, sFullName, sHIBP, sRegex, sRepetition, sSHA1, sStraight;
+	DWORD sAccountName, sCharset, sDictionary, sDiversity, sFullName, sHIBP, sLength, sRegex, sRepetition, sSHA1, sStraight;
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER);
 
@@ -150,6 +153,11 @@ extern "C" __declspec(dllexport) BOOLEAN PasswordFilter(PUNICODE_STRING AccountN
 	if (RegGetDWORD(HKEY_LOCAL_MACHINE, HIBP_REG_FOLDER, L"Armed", &sHIBP, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sHIBP && !PasswordFilterHIBP(AccountName, FullName, Password, SetOperation))
+		goto Cleanup;
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Armed", &sLength, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+	if (sLength && !PasswordFilterLength(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
 	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGEX_REG_FOLDER, L"Armed", &sRegex, hEventLog) != ERROR_SUCCESS)
@@ -1006,6 +1014,72 @@ BOOLEAN PasswordFilterHIBP(PUNICODE_STRING AccountName, PUNICODE_STRING FullName
 Cleanup:
 	(void)SecureZeroMemory(&hash, hash.capacity());
 
+	(void)SecureZeroMemory(&password, password.capacity());
+
+	if (!DeregisterEventSource(hEventLog))
+		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, EVENT_ERRORS, EVENT_DEREGISTEREVENTSOURCE_ERROR, NULL, 0, 0, NULL, NULL);
+
+	return status;
+}
+
+BOOLEAN PasswordFilterLength(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation) {
+	wstring accountname(AccountName->Buffer, AccountName->Length / 2);
+	wstring fullname(FullName->Buffer, FullName->Length / 2);
+	wstring password(Password->Buffer, Password->Length / 2);
+
+	BOOLEAN status = FALSE;
+
+	HANDLE hEventLog;
+	LPCWSTR lpStrings[2];
+
+	DWORD manMaxLength, manMinLength, maxLength, minLength;
+
+	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_LENGTH);
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Mandatory maximum password length", &manMaxLength, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Mandatory Minimum password length", &minLength, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Maximum password length", &maxLength, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, LENGTH_REG_FOLDER, L"Minimum password length", &manMinLength, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+
+	if (password.length() > manMaxLength) {
+		lpStrings[0] = accountname.c_str();
+		lpStrings[1] = fullname.c_str();
+		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, 0, PASSWORDFILTER_LENGTH_MAX_WARNING, NULL, 2, 0, lpStrings, NULL);
+		goto Cleanup;
+	}
+
+	if (password.length() <= manMinLength) {
+		lpStrings[0] = accountname.c_str();
+		lpStrings[1] = fullname.c_str();
+		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, 0, PASSWORDFILTER_LENGTH_MIN_WARNING, NULL, 2, 0, lpStrings, NULL);
+		goto Cleanup;
+	}
+
+	if (password.length() > maxLength && SetOperation) {
+		lpStrings[0] = accountname.c_str();
+		lpStrings[1] = fullname.c_str();
+		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, 0, PASSWORDFILTER_LENGTH_SETOPERATION_MAX_WARNING, NULL, 2, 0, lpStrings, NULL);
+	}
+
+	if (password.length() <= manMinLength && SetOperation) {
+		lpStrings[0] = accountname.c_str();
+		lpStrings[1] = fullname.c_str();
+		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, 0, PASSWORDFILTER_LENGTH_SETOPERATION_MIN_WARNING, NULL, 2, 0, lpStrings, NULL);
+	}
+
+	lpStrings[0] = accountname.c_str();
+	lpStrings[1] = fullname.c_str();
+	(void)ReportEventW(hEventLog, EVENTLOG_INFORMATION_TYPE, 0, PASSWORDFILTER_LENGTH_SUCCESS, NULL, 2, 0, lpStrings, NULL);
+	status = TRUE;
+
+Cleanup:
 	(void)SecureZeroMemory(&password, password.capacity());
 
 	if (!DeregisterEventSource(hEventLog))

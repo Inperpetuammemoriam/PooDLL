@@ -133,6 +133,10 @@
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Length" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
         <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)Regex" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
@@ -193,6 +197,14 @@
         <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\HIBP" Root="HKLM">
           <RegistryValue Name="Armed" Value="1" Type="integer" />
           <RegistryValue Name="Surmountability threshold" Value="2" Type="integer" />
+        </RegistryKey>
+      </Component>
+      <Component Id="Length" Guid="DC2AD324-2503-4A8B-9FE0-B111E21947D8" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\Length" Root="HKLM">
+          <RegistryValue Name="Mandatory maximum value" Value="256" Type="integer" />
+          <RegistryValue Name="Mandatory minimum value" Value="8" Type="integer" />
+          <RegistryValue Name="Maximum value" Value="127" Type="integer" />
+          <RegistryValue Name="Miniimum value" Value="16" Type="integer" />
         </RegistryKey>
       </Component>
       <Component Id="Regex" Guid="AF53E750-88D2-46A8-A344-7794D6951469" Directory="Regex">

@@ -265,6 +265,36 @@ The new password for %1 (%2) was returned by the HIBP API and was therefore reje
 .
 
 MessageId=
+SymbolicName=PASSWORDFILTER_LENGTH_SETOPERATION_MAX_WARNING
+Language=English
+The new password for %1 (%2) was longer than the maximum allowed length but was nonetheless accepted.
+.
+
+MessageId=
+SymbolicName=PASSWORDFILTER_LENGTH_SETOPERATION_MIN_WARNING
+Language=English
+The new password for %1 (%2) was shorter than the minimum allowed length but was nonetheless accepted.
+.
+
+MessageId=
+SymbolicName=PASSWORDFILTER_LENGTH_SUCCESS
+Language=English
+The new password for %1 (%2) matched the length requirements and was therefore accepted.
+.
+
+MessageId=
+SymbolicName=PASSWORDFILTER_LENGTH_MAX_WARNING
+Language=English
+The new password for %1 (%2) was longer than the maximum allowed length and was therefore rejected.
+.
+
+MessageId=
+SymbolicName=PASSWORDFILTER_LENGTH_MIN_WARNING
+Language=English
+The new password for %1 (%2) was shorter than the minimum allowed length and was therefore rejected.
+.
+
+MessageId=
 SymbolicName=PASSWORDFILTER_REGEX_SETOPERATION_WARNING
 Language=English
 The new password for %1 (%2) matched a regular expression in file "%3" but was nonetheless accepted.
