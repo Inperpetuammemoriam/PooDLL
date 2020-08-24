@@ -1,6 +1,6 @@
 ;/*
 ; * PasswordFilter.dll: DLL implementing the Password Filter functions
-; * Copyright (C) 2018-2019  Inperpetuammemoriam
+; * Copyright (C) 2018-2020  Inperpetuammemoriam
 ; *
 ; * This program is free software: you can redistribute it and/or modify
 ; * it under the terms of the GNU General Public License as published by
@@ -135,7 +135,7 @@ Could not open file "%1".
 MessageId=
 SymbolicName=INITIALIZECHANGENOTIFY
 Language=English
-PasswordFilter.dll  Copyright (C) 2018-2019  Inperpetuammemoriam%nThis program comes with ABSOLUTELY NO WARRANTY.%nThis is free software, and you are welcome to redistribute it%nunder certain conditions.
+PasswordFilter.dll  Copyright (C) 2018-2020  Inperpetuammemoriam%nThis program comes with ABSOLUTELY NO WARRANTY.%nThis is free software, and you are welcome to redistribute it%nunder certain conditions.
 .
 
 MessageId=
