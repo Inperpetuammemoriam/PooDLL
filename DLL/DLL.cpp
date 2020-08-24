@@ -28,6 +28,7 @@
 #include <bcrypt.h>
 #include <ntstatus.h>
 #include <SubAuth.h>
+#include <Winhttp.h>
 
 #include "..\MSG\MSG.h"
 
@@ -37,6 +38,7 @@
 #define EVENTLOG_SOURCE_PASSWORDFILTER_DICTIONARY L"PasswordFilterDictionary"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_DIVERSITY L"PasswordFilterDiversity"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_FULLNAME L"PasswordFilterFullName"
+#define EVENTLOG_SOURCE_PASSWORDFILTER_HIBP L"PasswordFilterHIBP"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_REGEX L"PasswordFilterRegex"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_REPETITION L"PasswordFilterRepetition"
 #define EVENTLOG_SOURCE_PASSWORDFILTER_SHA1 L"PasswordFilterSHA1"
@@ -51,6 +53,7 @@
 #define DICTIONARY_REG_FOLDER REG_FOLDER L"\\Dictionary"
 #define DIVERSITY_REG_FOLDER REG_FOLDER L"\\Diversity"
 #define FULLNAME_REG_FOLDER REG_FOLDER L"\\FullName"
+#define HIBP_REG_FOLDER REG_FOLDER L"\\HIBP"
 #define REGEX_DATA_FOLDER DATA_FOLDER L"\\Regex"
 #define REGEX_REG_FOLDER REG_FOLDER L"\\Regex"
 #define REPETITION_REG_FOLDER REG_FOLDER L"\\Repetition"
@@ -67,12 +70,14 @@ LPCWSTR HKEYtoString(HKEY hkey);
 LSTATUS RegGetDWORD(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, DWORD *dword, HANDLE hEventLog);
 LSTATUS RegGetMULTISZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, deque<wstring> *multisz, HANDLE hEventLog);
 LSTATUS RegGetSZ(HKEY hkey, LPCWSTR lpSubKey, LPCWSTR lpValue, wstring *sz, HANDLE hEventLog);
+string WinHTTPGet(LPCWSTR pswzServerName, INTERNET_PORT nServerPort, LPCWSTR pwszVerb, LPCWSTR *ppwszAcceptTypes, DWORD dwFlags, HANDLE hEventLog);
 
 BOOLEAN PasswordFilterAccountName(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterCharset(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterDictionary(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterFullName(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterDiversity(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
+BOOLEAN PasswordFilterHIBP(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterRegex(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterRepetition(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
 BOOLEAN PasswordFilterSHA1(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation);
@@ -113,7 +118,7 @@ extern "C" __declspec(dllexport) BOOLEAN PasswordFilter(PUNICODE_STRING AccountN
 
 	HANDLE hEventLog;
 
-	DWORD sAccountName, sCharset, sDictionary, sDiversity, sFullName, sRegex, sRepetition, sSHA1, sStraight;
+	DWORD sAccountName, sCharset, sDictionary, sDiversity, sFullName, sHIBP, sRegex, sRepetition, sSHA1, sStraight;
 
 	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER);
 
@@ -140,6 +145,11 @@ extern "C" __declspec(dllexport) BOOLEAN PasswordFilter(PUNICODE_STRING AccountN
 	if (RegGetDWORD(HKEY_LOCAL_MACHINE, FULLNAME_REG_FOLDER, L"Armed", &sFullName, hEventLog) != ERROR_SUCCESS)
 		goto Cleanup;
 	if (sFullName && !PasswordFilterFullName(AccountName, FullName, Password, SetOperation))
+		goto Cleanup;
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, HIBP_REG_FOLDER, L"Armed", &sHIBP, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+	if (sHIBP && !PasswordFilterHIBP(AccountName, FullName, Password, SetOperation))
 		goto Cleanup;
 
 	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REGEX_REG_FOLDER, L"Armed", &sRegex, hEventLog) != ERROR_SUCCESS)
@@ -480,6 +490,142 @@ Cleanup:
 	return sec;
 }
 
+string WinHTTPGet(LPCWSTR pswzServerName, INTERNET_PORT nServerPort, LPCWSTR pwszVerb, LPCWSTR *ppwszAcceptTypes, DWORD dwFlags, HANDLE hEventLog) {
+	NTSTATUS status;
+
+	LPCWSTR lpStrings[1];
+
+	HINTERNET hConnect = NULL, hRequest = NULL, hSession = NULL;
+	DWORD dwDownloaded = 0, dwSize = 0, nConnectTimeout, nReceiveTimeout, nResolveTimeout, nSendTimeout;
+	PCHAR pszOutBuffer = NULL;
+	string response;
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REG_FOLDER, L"WinHTTP Connect Timeout", &nConnectTimeout, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REG_FOLDER, L"WinHTTP Receive Timeout", &nReceiveTimeout, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REG_FOLDER, L"WinHTTP Resolve Timeout", &nResolveTimeout, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, REG_FOLDER, L"WinHTTP Send Timeout", &nSendTimeout, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+
+	if ((int)nConnectTimeout < 0) {
+		nConnectTimeout = 60000;
+		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REG_FOLDER L"\\WinHTTP Connect Timeout";
+		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, WINHTTP_ERRORS, WINHTTP_TIMEOUT_VALUE_WARNING, NULL, 1, 0, lpStrings, NULL);
+	}
+
+	if ((int)nReceiveTimeout < 0) {
+		nReceiveTimeout = 30000;
+		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REG_FOLDER L"\\WinHTTP Receive Timeout";
+		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, WINHTTP_ERRORS, WINHTTP_TIMEOUT_VALUE_WARNING, NULL, 1, 0, lpStrings, NULL);
+	}
+
+	if ((int)nResolveTimeout < 0) {
+		nResolveTimeout = 0;
+		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REG_FOLDER L"\\WinHTTP Resolve Timeout";
+		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, WINHTTP_ERRORS, WINHTTP_TIMEOUT_VALUE_WARNING, NULL, 1, 0, lpStrings, NULL);
+	}
+
+	if ((int)nSendTimeout < 0) {
+		nSendTimeout = 30000;
+		lpStrings[0] = L"HKEY_LOCAL_MACHINE\\" REG_FOLDER L"\\WinHTTP Send Timeout";
+		(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, WINHTTP_ERRORS, WINHTTP_TIMEOUT_VALUE_WARNING, NULL, 1, 0, lpStrings, NULL);
+	}
+
+	hSession = WinHttpOpen(SOLUTION, WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY, NULL, NULL, 0);
+	if (hSession == NULL) {
+		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+		goto Cleanup;
+	}
+
+	if (!WinHttpSetTimeouts(hSession, nResolveTimeout, nConnectTimeout, nSendTimeout, nReceiveTimeout)) {
+		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+		goto Cleanup;
+	}
+
+	hConnect = WinHttpConnect(hSession, pswzServerName, nServerPort, 0);
+	if (hConnect == NULL) {
+		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+		goto Cleanup;
+	}
+
+	hRequest = WinHttpOpenRequest(hConnect, NULL, pwszVerb, NULL, NULL, ppwszAcceptTypes, dwFlags);
+	if (hRequest == NULL) {
+		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+		goto Cleanup;
+	}
+
+	if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, NULL, 0, 0, 0)) {
+		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+		goto Cleanup;
+	}
+
+	if (!WinHttpReceiveResponse(hRequest, NULL)) {
+		(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+		goto Cleanup;
+	}
+
+	do {
+		dwSize = 0;
+		if (!WinHttpQueryDataAvailable(hRequest, &dwSize)) {
+			(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+			(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+			goto Cleanup;
+		}
+		if (dwSize > 0) {
+			pszOutBuffer = (PCHAR)Alloc(dwSize * sizeof(PCHAR), &status, hEventLog);
+			if (pszOutBuffer == NULL)
+				goto Cleanup;
+			if (!WinHttpReadData(hRequest, pszOutBuffer, dwSize, &dwDownloaded)) {
+				(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+				(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+				goto Cleanup;
+			}
+			response.append((PCHAR)pszOutBuffer, dwDownloaded);
+			if (!Free(pszOutBuffer, hEventLog))
+				goto Cleanup;
+			pszOutBuffer = NULL;
+		}
+	} while (dwSize > 0);
+
+Cleanup:
+	if (pszOutBuffer)
+		(void)Free(pszOutBuffer, hEventLog);
+
+	if (hRequest) {
+		if (!WinHttpCloseHandle(hRequest)) {
+			(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+			(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+		}
+	}
+
+	if (hConnect) {
+		if (!WinHttpCloseHandle(hConnect)) {
+			(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+			(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+		}
+	}
+
+	if (hSession) {
+		if (!WinHttpCloseHandle(hSession)) {
+			(void)FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), 0, (LPWSTR)&lpStrings[0], 0, NULL);
+			(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, WINHTTP_ERRORS, NULL, NULL, 1, 0, lpStrings, NULL);
+		}
+	}
+
+	return response;
+}
+
 BOOLEAN PasswordFilterAccountName(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation) {
 	wstring accountname(AccountName->Buffer, AccountName->Length / 2);
 	wstring fullname(FullName->Buffer, FullName->Length / 2);
@@ -798,6 +944,68 @@ BOOLEAN PasswordFilterFullName(PUNICODE_STRING AccountName, PUNICODE_STRING Full
 	status = TRUE;
 
 Cleanup:
+	(void)SecureZeroMemory(&password, password.capacity());
+
+	if (!DeregisterEventSource(hEventLog))
+		(void)ReportEventW(hEventLog, EVENTLOG_ERROR_TYPE, EVENT_ERRORS, EVENT_DEREGISTEREVENTSOURCE_ERROR, NULL, 0, 0, NULL, NULL);
+
+	return status;
+}
+
+BOOLEAN PasswordFilterHIBP(PUNICODE_STRING AccountName, PUNICODE_STRING FullName, PUNICODE_STRING Password, BOOLEAN SetOperation) {
+	wstring accountname(AccountName->Buffer, AccountName->Length / 2);
+	wstring fullname(FullName->Buffer, FullName->Length / 2);
+	wstring password(Password->Buffer, Password->Length / 2);
+
+	BOOLEAN status = FALSE;
+
+	HANDLE hEventLog;
+	LPCWSTR lpStrings[2];
+
+	string hash, hashes;
+	wstring hashChars;
+	DWORD sThreshold;
+	size_t pos;
+
+	hEventLog = RegisterEventSourceW(NULL, EVENTLOG_SOURCE_PASSWORDFILTER_HIBP);
+
+	if (RegGetDWORD(HKEY_LOCAL_MACHINE, HIBP_REG_FOLDER, L"Surmountability threshold", &sThreshold, hEventLog) != ERROR_SUCCESS)
+		goto Cleanup;
+
+	if (BCryptComputeHash(Password, &hash, hEventLog) != STATUS_SUCCESS)
+		goto Cleanup;
+
+	hashChars.assign(hash.begin(), hash.begin() + 5);
+
+	hashes = WinHTTPGet(L"api.pwnedpasswords.com", INTERNET_DEFAULT_HTTPS_PORT, (L"/range/" + hashChars).c_str(), WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_REFRESH | WINHTTP_FLAG_SECURE, hEventLog);
+	if (hashes.empty())
+		goto Cleanup;
+
+	(void)transform(hashes.begin(), hashes.end(), hashes.begin(), ::tolower);
+	pos = hashes.find(hash.substr(5, 35));
+	if (pos != string::npos) {
+		if (stoi(hashes.substr(pos + 36, hashes.find("\r\n", pos) - (pos + 36))) < sThreshold && SetOperation) {
+			lpStrings[0] = accountname.c_str();
+			lpStrings[1] = fullname.c_str();
+			(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, 0, PASSWORDFILTER_HIBP_SETOPERATION_WARNING, NULL, 2, 0, lpStrings, NULL);
+			status = TRUE;
+			goto Cleanup;
+		}
+		else {
+			lpStrings[0] = accountname.c_str();
+			lpStrings[1] = fullname.c_str();
+			(void)ReportEventW(hEventLog, EVENTLOG_WARNING_TYPE, 0, PASSWORDFILTER_HIBP_WARNING, NULL, 2, 0, lpStrings, NULL);
+			goto Cleanup;
+		}
+	}
+	lpStrings[0] = accountname.c_str();
+	lpStrings[1] = fullname.c_str();
+	(void)ReportEventW(hEventLog, EVENTLOG_INFORMATION_TYPE, 0, PASSWORDFILTER_HIBP_SUCCESS, NULL, 2, 0, lpStrings, NULL);
+	status = TRUE;
+
+Cleanup:
+	(void)SecureZeroMemory(&hash, hash.capacity());
+
 	(void)SecureZeroMemory(&password, password.capacity());
 
 	if (!DeregisterEventSource(hEventLog))

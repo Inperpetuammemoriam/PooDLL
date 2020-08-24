@@ -58,6 +58,7 @@
         <Directory Id="ProgramFilesFolder_PS0" Name="PS0">
           <Directory Id="INSTALLFOLDER" Name="$(var.SolutionName)">
             <Directory Id="FontAwesome" Name="Font Awesome" />
+            <Directory Id="HIBP" Name="Have I Been Pwned" />
           </Directory>
         </Directory>
       </Directory>
@@ -82,6 +83,12 @@
         <?endif ?>
         <RegistryKey Key="SYSTEM\CurrentControlSet\Control\Lsa" Root="HKLM">
           <RegistryValue Name="Notification Packages" Value="$(var.SolutionName)" Type="multiString" Action="append" />
+        </RegistryKey>
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)" Root="HKLM">
+          <RegistryValue Name="WinHTTP Connect Timeout" Value="60000" Type="integer" />
+          <RegistryValue Name="WinHTTP Receive Timeout" Value="30000" Type="integer" />
+          <RegistryValue Name="WinHTTP Resolve Timeout" Value="0" Type="integer" />
+          <RegistryValue Name="WinHTTP Send Timeout" Value="30000" Type="integer" />
         </RegistryKey>
       </Component>
       <Component Id="MSG" Guid="95A0EDA4-4346-43AE-B12A-A6874414223B" Directory="INSTALLFOLDER">
@@ -119,6 +126,10 @@
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
         <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)FullName" Root="HKLM">
+          <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+          <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
+        </RegistryKey>
+        <RegistryKey Key="SYSTEM\CurrentControlSet\Services\EventLog\$(var.SolutionName)\$(var.SolutionName)HIBP" Root="HKLM">
           <RegistryValue Name="EventMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
           <RegistryValue Name="CategoryMessageFile" Value="[$(var.PlatformProgramFilesFolder)]PS0\$(var.SolutionName)\Message.dll" Type="string" />
         </RegistryKey>
@@ -178,6 +189,12 @@
           <RegistryValue Name="Minimum component length" Value="3" Type="integer" />
         </RegistryKey>
       </Component>
+      <Component Id="HIBP" Guid="FE641154-CD59-41C1-AF36-84CF40562801" Directory="DATAFOLDER">
+        <RegistryKey Key="SOFTWARE\PS0\$(var.SolutionName)\HIBP" Root="HKLM">
+          <RegistryValue Name="Armed" Value="1" Type="integer" />
+          <RegistryValue Name="Surmountability threshold" Value="2" Type="integer" />
+        </RegistryKey>
+      </Component>
       <Component Id="Regex" Guid="AF53E750-88D2-46A8-A344-7794D6951469" Directory="Regex">
         <File Id="PasswordRegex" Name="password.txt" Source="Resource Files\password.txt" />
         <File Id="DateRegex" Name="date.txt" Source="Resource Files\date.txt" />
@@ -230,8 +247,11 @@
       <Component Id="FA_LICENSE" Guid="CEB62F2F-7E81-4067-8994-DCE1A064CBD9" Directory="FontAwesome">
         <File Id="FA_LICENSE" Name="LICENSE.txt" Source="Resource Files\Font Awesome\LICENSE.txt" />
       </Component>
-      <Component Id="LICENSE" Guid="B7583222-3F1E-45F1-B2A5-B0BF4AD59EB2" Directory="INSTALLFOLDER">
-        <File Id="LICENSE" Name="LICENSE.txt" Source="Resource Files\LICENSE.txt" />
+      <Component Id="HIBP_LICENSES" Guid="B3DFFEB8-BD8C-48D9-9F3D-26DF2FE83287" Directory="HIBP">
+        <File Id="HIBP_README" Name="README.txt" Source="Resource Files\Have I Been Pwned\README.txt" />
+      </Component>
+      <Component Id="$(var.SolutionName)_LICENSES" Guid="B7583222-3F1E-45F1-B2A5-B0BF4AD59EB2" Directory="INSTALLFOLDER">
+        <File Id="$(var.SolutionName)_LICENSE" Name="LICENSE.txt" Source="Resource Files\LICENSE.txt" />
       </Component>
     </ComponentGroup>
   </Fragment>

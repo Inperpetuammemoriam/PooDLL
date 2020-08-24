@@ -52,6 +52,12 @@ Language=English
 Registry Errors
 .
 
+MessageId=
+SymbolicName=WINHTTP_ERRORS
+Language=English
+WinHTTP Errors
+.
+
 ;// Messages
 
 MessageId=
@@ -241,6 +247,24 @@ A component of FullName was found in the new password of %1 (%2). The new passwo
 .
 
 MessageId=
+SymbolicName=PASSWORDFILTER_HIBP_SETOPERATION_WARNING
+Language=English
+The new password for %1 (%2) was returned by the HIBP API but was nonetheless accepted.
+.
+
+MessageId=
+SymbolicName=PASSWORDFILTER_HIBP_SUCCESS
+Language=English
+The new password for %1 (%2) was not returned by the HIBP API and was therefore accepted.
+.
+
+MessageId=
+SymbolicName=PASSWORDFILTER_HIBP_WARNING
+Language=English
+The new password for %1 (%2) was returned by the HIBP API and was therefore rejected.
+.
+
+MessageId=
 SymbolicName=PASSWORDFILTER_REGEX_SETOPERATION_WARNING
 Language=English
 The new password for %1 (%2) matched a regular expression in file "%3" but was nonetheless accepted.
@@ -316,4 +340,16 @@ MessageId=
 SymbolicName=REGISTRY_REGGETVALUE_VALUE_ERROR
 Language=English
 Could not get the registry value for "%1\%2\%3".%n%nSystem Error Message: %4
+.
+
+MessageId=
+SymbolicName=WINHTTP_CLOSEHANDLE_ERROR
+Language=English
+Could not close handle "%1".
+.
+
+MessageId=
+SymbolicName=WINHTTP_TIMEOUT_VALUE_WARNING
+Language=English
+The timeout value specified in "%1" is too large. The default timeout value will be used instead.
 .
