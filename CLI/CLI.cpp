@@ -1,6 +1,6 @@
 /*
  * PooDLL.exe: Command-line tool for testing Password Filter DLLs
- * Copyright (C) 2018-2020  Inperpetuammemoriam
+ * Copyright (C) 2018-2022  Inperpetuammemoriam
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ int wmain(int argc, wchar_t *argv[], wchar_t *envp[]) {
 	PasswordFilter_t PasswordFilter;
 	PasswordChangeNotify_t PasswordChangeNotify;
 
-	wcerr << L"PooDLL.exe  Copyright (C) 2018-2020  Inperpetuammemoriam" << endl;
+	wcerr << L"PooDLL.exe  Copyright (C) 2018-2022  Inperpetuammemoriam" << endl;
 	wcerr << L"This program comes with ABSOLUTELY NO WARRANTY." << endl;
 	wcerr << L"This is free software, and you are welcome to redistribute it" << endl;
 	wcerr << L"under certain conditions." << endl;

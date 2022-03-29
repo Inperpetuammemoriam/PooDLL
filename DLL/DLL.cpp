@@ -1,6 +1,6 @@
 /*
  * PooDLL.dll: DLL implementing the Password Filter functions
- * Copyright (C) 2018-2020  Inperpetuammemoriam
+ * Copyright (C) 2018-2022  Inperpetuammemoriam
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
